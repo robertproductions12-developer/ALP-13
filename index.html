@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <link rel="icon" href="https://i.ibb.co/bRgBcNkd/a-bold-logo-design-featuring-the-letters-em-SC-r-FBQ4-O6y0-WUPQAUu-A-ay-N6fa2-SQF6-Pw-O1r-KAR9-FA.jpg" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALP 13 Inventario Pro</title>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body, html { 
+            margin: 0; padding: 0; height: 100%; 
+            font-family: 'Segoe UI', sans-serif; 
+            color: #e0e0e0; 
+            overflow-x: hidden;
+        }
+
+        /* FONDO ANIMADO */
+        body {
+            background: linear-gradient(-45deg, #000000, #1a0b2e, #320b46, #000000);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-number {
+            position: fixed; color: rgba(187, 134, 252, 0.15);
+            font-family: monospace; font-weight: bold;
+            user-select: none; z-index: -1; animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-10vh); opacity: 0; }
+        }
+
+        /* --- CONTENEDORES --- */
+        .login-box, .seccion {
+            background: rgba(20, 20, 20, 0.75); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            padding: 20px; margin-bottom: 20px;
+        }
+
+        h2, h3 { 
+            color: #d1b3ff; border-bottom: 1px solid #4a148c; 
+            padding-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- BUSCADOR (LUPA) --- */
+        .search-box {
+            position: relative; margin-bottom: 15px;
+        }
+        .search-box input {
+            padding-left: 40px; /* Espacio para el icono */
+            border-color: #00e676;
+        }
+        .search-icon {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            font-size: 1.2em; color: #00e676;
+        }
+
+        /* --- BOTONES --- */
+        button {
+            width: 100%; padding: 12px; margin-top: 10px;
+            border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; color: white;
+            background: linear-gradient(90deg, #6a0dad, #9c27b0);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4); transition: all 0.3s ease;
+        }
+        button:active { transform: scale(0.97); }
+        button:hover { box-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
+
+        button.borrar { width: auto; padding: 6px 15px; font-size: 0.8em; background: linear-gradient(90deg, #880e4f, #c2185b); }
+        button.btn-logout { width: auto; background: #333; border: 1px solid #555; box-shadow: none; }
+        
+        /* Botones de acción reporte */
+        .btn-action { width: auto; padding: 8px 15px; font-size: 0.9em; margin-right: 5px; }
+        .btn-excel { background: linear-gradient(90deg, #1b5e20, #4caf50); }
+        .btn-email { background: linear-gradient(90deg, #0d47a1, #2196f3); }
+        .btn-print { background: linear-gradient(90deg, #e65100, #ff9800); }
+        
+        /* Botón toggle login */
+        .btn-link { 
+            background: none; border: none; box-shadow: none; 
+            color: #ea80fc; text-decoration: underline; font-size: 0.9em; margin-top: 15px;
+        }
+        .btn-link:hover { box-shadow: none; color: #fff; }
+
+        /* --- INPUTS --- */
+        input, select {
+            width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box;
+            border-radius: 6px; font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4a148c; color: #fff; outline: none;
+        }
+        input:focus, select:focus { border-color: #d500f9; box-shadow: 0 0 8px rgba(213, 0, 249, 0.3); }
+
+        /* --- TABLAS --- */
+        .tabla-container { overflow-x: auto; max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #444; padding: 12px; text-align: left; font-size: 0.9em; }
+        th { color: #d500f9; text-transform: uppercase; font-size: 0.8em; border-bottom: 2px solid #6a0dad; position: sticky; top: 0; background: #1a0b2e; z-index: 10; }
+        td { color: #ddd; }
+        
+        /* --- VIDEO FOOTER --- */
+        .video-container {
+            width: 100%; max-width: 600px; margin: 20px auto;
+            border: 2px solid #4a148c; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 0 20px rgba(106, 13, 173, 0.5);
+        }
+        .video-container iframe { width: 100%; height: 315px; border: none; }
+
+        /* --- LOGIN & APP LAYOUT --- */
+        #login-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
+        }
+        .login-inner { width: 85%; max-width: 320px; text-align: center; position: relative; }
+        .error-msg { color: #ff5252; display: none; margin-top: 10px; font-size: 0.9em; }
+        .success-msg { color: #00e676; display: none; margin-top: 10px; font-size: 0.9em; }
+        
+        #app-view { display: none; padding: 15px; padding-bottom: 40px; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid #6a0dad; }
+        a { color: #ea80fc; text-decoration: none; font-weight: bold; }
+        .footer-credit { text-align: center; font-size: 0.7em; color: #888; margin-top: 30px; letter-spacing: 1px; width: 100%; font-weight: bold; }
+        .login-footer { position: absolute; bottom: 15px; }
+
+        /* --- ESTILOS DE IMPRESIÓN --- */
+        @media print {
+            body { background: white; color: black; animation: none; }
+            .bg-number, .header-bar button, .seccion h3, input, select, button, .video-container, .footer-credit, .login-box, .search-box { display: none; }
+            #app-view, .seccion { display: block; background: white; border: none; box-shadow: none; padding: 0; margin: 0; }
+            .seccion { border-bottom: 2px solid #000; margin-bottom: 20px; }
+            table { width: 100%; border: 1px solid #000; }
+            th, td { border: 1px solid #000; color: #000; }
+            th { background-color: #eee; }
+            .no-print { display: none !important; }
+            #titulo-impresion { display: block !important; text-align: center; font-size: 20px; margin-bottom: 10px; }
+        }
+        #titulo-impresion { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <!-- FONDO DE NÚMEROS -->
+    <div id="bg-numbers"></div>
+
+    <!-- 1. PANTALLA DE ACCESO Y REGISTRO -->
+    <div id="login-view">
+        <div class="login-box login-inner">
+            <h2 style="border:none; font-size: 2.5em; text-shadow: 0 0 15px #aa00ff; margin-bottom: 10px;">ALP 13</h2>
+            
+            <!-- Formulario Login -->
+            <div id="form-login">
+                <input type="text" id="log_user" placeholder="Usuario">
+                <input type="password" id="log_pass" placeholder="Contraseña">
+                <button onclick="iniciarSesion()">INGRESAR</button>
+                <button class="btn-link" onclick="toggleRegistro()">¿No tienes cuenta? Regístrate</button>
+                <p id="error_msg" class="error-msg">Datos incorrectos</p>
+            </div>
+
+            <!-- Formulario Registro -->
+            <div id="form-register" style="display:none;">
+                <h3 style="border:none; font-size:1.2em; color:#fff;">Crear Usuario</h3>
+                <input type="text" id="reg_user" placeholder="Nuevo Usuario">
+                <input type="password" id="reg_pass" placeholder="Nueva Contraseña">
+                <button onclick="registrarUsuario()" style="background: linear-gradient(90deg, #00c853, #64dd17);">REGISTRARSE</button>
+                <button class="btn-link" onclick="toggleRegistro()">Volver al Login</button>
+                <p id="reg_msg" class="success-msg">¡Usuario creado!</p>
+            </div>
+
+        </div>
+        <div class="footer-credit login-footer">DEVELOPER - ROBERT PARACO 2025</div>
+    </div>
+
+    <!-- 2. PANTALLA PRINCIPAL (APP) -->
+    <div id="app-view">
+        <div class="header-bar">
+            <h2>📦 INVENTARIO</h2>
+            <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+        </div>
+
+        <!-- SECCIÓN: NUEVO PRODUCTO -->
+        <div class="seccion no-print">
+            <h3>+ Nuevo Producto</h3>
+            <input type="text" id="inp_codigo" placeholder="Código (ej. P-01)">
+            <input type="text" id="inp_nombre" placeholder="Nombre del Producto">
+            <input type="text" id="inp_ubicacion" placeholder="Ubicación (ej. Estante A)">
+            <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
+            <label style="color:#d1b3ff; font-size:0.9em; display:block; margin-top:5px;">Foto:</label>
+            <input type="file" id="inp_foto" accept="image/*">
+            <button onclick="agregarProducto()">GUARDAR</button>
+        </div>
+
+        <!-- SECCIÓN: ESTADO ACTUAL (CON BUSCADOR) -->
+        <div class="seccion no-print">
+            <h3>Estado Actual</h3>
+            
+            <!-- BUSCADOR CON LUPA -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Buscar por nombre o código...">
+            </div>
+
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr><th>Img</th><th>Datos & QR</th><th>Cant.</th><th>Opción</th></tr>
+                    </thead>
+                    <tbody id="tablaProductos"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: REGISTRAR MOVIMIENTO -->
+        <div class="seccion no-print">
+            <h3>Registrar Movimiento</h3>
+            <label style="color:#d1b3ff; font-size:0.8em;">Seleccionar Producto:</label>
+            <select id="sel_movProd_input"></select>
+            <div style="display:flex; gap:10px;">
+                <select id="sel_tipo" style="flex:1;">
+                    <option value="ENTRADA">Entrada (+)</option>
+                    <option value="SALIDA">Salida (-)</option>
+                </select>
+                <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
+            </div>
+            <input type="text" id="inp_referencia" placeholder="Ref: Orden Producción / Nota">
+            <button onclick="agregarMovimiento()">REGISTRAR</button>
+        </div>
+
+        <!-- SECCIÓN: HISTORIAL Y REPORTES -->
+        <div class="seccion" id="area-impresion">
+            <h3 class="no-print">Historial y Reportes</h3>
+            <h2 id="titulo-impresion">Reporte de Movimientos - ALP 13</h2>
+            
+            <div class="no-print" style="margin-bottom: 15px;">
+                <label style="color:#d1b3ff; font-size:0.8em;">Filtrar por producto:</label>
+                <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="no-print" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
+                <button class="btn-action btn-excel" onclick="exportarExcel()">Descargar Excel</button>
+                <button class="btn-action btn-email" onclick="enviarCorreo()">Enviar Correo</button>
+                <button class="btn-action btn-print" onclick="imprimirSeleccion()">Imprimir Selección</button>
+            </div>
+
+            <div class="tabla-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="no-print" style="width:30px;">✔</th>
+                            <th>Producto</th><th>Ref.</th><th>Tipo</th><th>Cant</th><th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMovProd"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: VIDEO AL PIE DE PÁGINA -->
+        <div class="seccion no-print">
+            <h3>Video Institucional</h3>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/lxRwEPvL-mQ?si=7B5" title="Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <!-- CREDITOS -->
+        <div class="footer-credit no-print">DEVELOPER - ROBERT PARACO 2025</div>
+    </div>
+
+<script>
+    // --- GESTIÓN DE USUARIOS Y REGISTRO ---
+    function initUsuarios() {
+        let users = JSON.parse(localStorage.getItem("alp13_users"));
+        if (!users) {
+            const defaultUser = [{ user: "admin", pass: "1234" }];
+            localStorage.setItem("alp13_users", JSON.stringify(defaultUser));
+        }
+    }
+
+    function toggleRegistro() {
+        const loginDiv = document.getElementById("form-login");
+        const regDiv = document.getElementById("form-register");
+        const err = document.getElementById("error_msg");
+        const msg = document.getElementById("reg_msg");
+        
+        err.style.display = 'none';
+        msg.style.display = 'none';
+
+        if(loginDiv.style.display === "none"){
+            loginDiv.style.display = "block";
+            regDiv.style.display = "none";
+        } else {
+            loginDiv.style.display = "none";
+            regDiv.style.display = "block";
+        }
+    }
+
+    function registrarUsuario() {
+        const u = document.getElementById("reg_user").value.trim();
+        const p = document.getElementById("reg_pass").value.trim();
+        const msg = document.getElementById("reg_msg");
+        
+        if(!u || !p) { alert("Llena todos los campos"); return; }
+
+        let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
+        
+        // Verificar duplicados
+        if(users.some(x => x.user === u)){
+            alert("El usuario ya existe");
+            return;
+        }
+
+        users.push({ user: u, pass: p });
+        localStorage.setItem("alp13_users", JSON.stringify(users));
+        
+        msg.style.display = "block";
+        msg.innerText = "¡Usuario Creado! Ahora ingresa.";
+        
+        document.getElementById("reg_user").value = "";
+        document.getElementById("reg_pass").value = "";
+        
+        setTimeout(() => { toggleRegistro(); }, 1500);
+    }
+
+    function iniciarSesion() {
+        const u = document.getElementById("log_user").value.trim();
+        const p = document.getElementById("log_pass").value.trim();
+        const err = document.getElementById("error_msg");
+        let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
+        const valid = users.find(x => x.user === u && x.pass === p);
+
+        if(valid) {
+            document.getElementById("login-view").style.display = "none";
+            document.getElementById("app-view").style.display = "block";
+            actualizarTodo();
+        } else {
+            err.style.display = "block";
+        }
+    }
+
+    function cerrarSesion() {
+        alert("PROGRAMADOR - ROBERT PARACO 2025");
+        document.getElementById("app-view").style.display = "none";
+        document.getElementById("login-view").style.display = "flex";
+        document.getElementById("log_pass").value = "";
+        document.getElementById("error_msg").style.display = "none";
+    }
+
+    // --- LÓGICA DEL SISTEMA ---
+    let productos = JSON.parse(localStorage.getItem("alp13_productos")) || [];
+    let movimientos = JSON.parse(localStorage.getItem("alp13_mov")) || [];
+
+    function crearFondoNumeros() {
+        const container = document.getElementById("bg-numbers");
+        for (let i = 0; i < 30; i++) {
+            let num = document.createElement("div");
+            num.classList.add("bg-number");
+            num.innerText = Math.floor(Math.random() * 10);
+            num.style.left = Math.random() * 100 + "vw";
+            num.style.fontSize = (Math.random() * 20 + 15) + "px";
+            num.style.animationDuration = (Math.random() * 5 + 4) + "s";
+            num.style.animationDelay = (Math.random() * 5) + "s";
+            container.appendChild(num);
+        }
+    }
+
+    const getBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    async function agregarProducto() {
+        const codigo = document.getElementById("inp_codigo").value;
+        const nombre = document.getElementById("inp_nombre").value;
+        const ubicacion = document.getElementById("inp_ubicacion").value;
+        const saldo = parseInt(document.getElementById("inp_saldo").value) || 0;
+        const fileInput = document.getElementById("inp_foto");
+        
+        if(!codigo || !nombre) { alert("Nombre y Código obligatorios"); return; }
+
+        let fotoBase64 = "https://via.placeholder.com/50/220033/ffffff?text=IMG";
+        if (fileInput.files.length > 0) {
+            try { fotoBase64 = await getBase64(fileInput.files[0]); } catch (e) {}
+        }
+
+        const datosQR = `ID:${codigo} | Prod:${nombre} | Loc:${ubicacion} | Stock:${saldo}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(datosQR)}`;
+
+        productos.push({ codigo, nombre, ubicacion, saldo, foto: fotoBase64, qr: qrUrl });
+        productos.sort((a,b)=> a.nombre.localeCompare(b.nombre));
+        
+        guardar();
+        limpiarInputs();
+        alert("Producto Guardado con QR Único");
+    }
+
+    function agregarMovimiento(){
+        const nombreProd = document.getElementById("sel_movProd_input").value;
+        const tipo = document.getElementById("sel_tipo").value;
+        const cant = parseInt(document.getElementById("inp_cantidad").value);
+        const ref = document.getElementById("inp_referencia").value || "-";
+
+        if(!nombreProd || !cant) return alert("Falta producto o cantidad");
+
+        let index = productos.findIndex(p => p.nombre === nombreProd);
+        if(index === -1) return;
+
+        if(tipo === "ENTRADA") {
+            productos[index].saldo += cant;
+        } else {
+            if(productos[index].saldo < cant) return alert("Saldo insuficiente");
+            productos[index].saldo -= cant;
+        }
+        
+        const p = productos[index];
+        const nuevosDatosQR = `ID:${p.codigo} | Prod:${p.nombre} | Loc:${p.ubicacion} | Stock:${p.saldo}`;
+        p.qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(nuevosDatosQR)}`;
+
+        movimientos.push({
+            producto: nombreProd, tipo, cantidad: cant, referencia: ref,
+            fecha: new Date().toLocaleString()
+        });
+
+        document.getElementById("inp_cantidad").value = "";
+        document.getElementById("inp_referencia").value = "";
+        guardar();
+        alert("Movimiento OK");
+    }
+
+    function borrarProducto(i){
+        if(confirm("¿Eliminar producto?")){
+            productos.splice(i,1);
+            guardar();
+        }
+    }
+
+    function guardar(){
+        localStorage.setItem("alp13_productos", JSON.stringify(productos));
+        localStorage.setItem("alp13_mov", JSON.stringify(movimientos));
+        actualizarTodo();
+    }
+
+    // --- FUNCIÓN MOSTRAR (MODIFICADA PARA BUSCADOR) ---
+    function mostrar(listaData = productos){
+        const t = document.getElementById("tablaProductos");
+        t.innerHTML = "";
+        if(listaData.length === 0){ t.innerHTML = "<tr><td colspan='4'>No encontrado</td></tr>"; return; }
+
+        listaData.forEach((p)=>{
+            // Encontrar el índice original para poder borrar correctamente
+            const originalIndex = productos.findIndex(prod => prod.nombre === p.nombre);
+            
+            t.innerHTML += `
+            <tr>
+                <td><img src="${p.foto}" class="prod-img"></td>
+                <td>
+                    <b style="color:#fff;">${p.nombre}</b><br>
+                    <small style="color:#d1b3ff;">ID: ${p.codigo}</small><br>
+                    <small style="color:#888;">Ubi: ${p.ubicacion}</small>
+                </td>
+                <td style="font-size:1.1em; color:#e040fb; font-weight:bold;">${p.saldo}</td>
+                <td>
+                    <button class="borrar" onclick="borrarProducto(${originalIndex})">X</button>
+                    <a href="${p.qr}" download="QR_${p.codigo}.png" target="_blank">
+                        <img src="${p.qr}" style="width:50px; margin-top:5px; border:2px solid white;">
+                    </a>
+                </td>
+            </tr>`;
+        });
+    }
+
+    // --- FUNCIÓN BUSCADOR ---
+    function buscarProducto() {
+        const termino = document.getElementById("inp_buscar").value.toLowerCase();
+        const filtrados = productos.filter(p => 
+            p.nombre.toLowerCase().includes(termino) || 
+            p.codigo.toLowerCase().includes(termino)
+        );
+        mostrar(filtrados);
+    }
+
+    function mostrarMovPorProducto(){
+        const sel = document.getElementById("sel_movProd").value;
+        const t = document.getElementById("tablaMovProd");
+        t.innerHTML = "";
+        
+        let lista = movimientos.slice().reverse();
+        if(sel && sel !== "TODOS") {
+            lista = lista.filter(m => m.producto === sel);
+        }
+
+        if(lista.length === 0) { t.innerHTML = "<tr><td colspan='6'>Sin datos</td></tr>"; return; }
+
+        lista.forEach((x, index) => {
+            let color = x.tipo === 'ENTRADA' ? '#00e676' : '#ff1744';
+            t.innerHTML += `
+            <tr>
+                <td class="no-print"><input type="checkbox" class="chk-print" value="${index}"></td>
+                <td>${x.producto}</td>
+                <td style="color:#fff; font-size:0.85em;">${x.referencia}</td>
+                <td style="color:${color}; font-weight:bold; font-size:0.8em;">${x.tipo}</td>
+                <td style="font-weight:bold;">${x.cantidad}</td>
+                <td style="color:#aaa; font-size:0.7em;">${x.fecha}</td>
+            </tr>`;
+        });
+    }
+
+    function cargarSelect(){
+        const s1 = document.getElementById("sel_movProd");
+        const s2 = document.getElementById("sel_movProd_input");
+        const prev1 = s1.value; const prev2 = s2.value;
+        
+        s1.innerHTML = `<option value="TODOS">-- Todos --</option>`;
+        s2.innerHTML = "";
+        
+        productos.forEach(p => {
+            s1.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+            s2.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
+        });
+        
+        if(prev1) s1.value = prev1;
+        if(prev2) s2.value = prev2;
+    }
+
+    function limpiarInputs(){
+        ["inp_codigo","inp_nombre","inp_ubicacion","inp_saldo","inp_foto"].forEach(id => document.getElementById(id).value = "");
+    }
+
+    function actualizarTodo(){
+        cargarSelect(); mostrar(); mostrarMovPorProducto();
+    }
+
+    // --- REPORTES ---
+    function getSelectedRows() {
+        const checkboxes = document.querySelectorAll('.chk-print:checked');
+        const visibleRows = Array.from(document.querySelectorAll('#tablaMovProd tr'));
+        
+        if(checkboxes.length === 0) {
+             return visibleRows.map(tr => {
+                 const cols = tr.querySelectorAll('td');
+                 if(cols.length < 2) return null; 
+                 return {
+                    prod: cols[1].innerText, ref: cols[2].innerText, 
+                    tipo: cols[3].innerText, cant: cols[4].innerText, fecha: cols[5].innerText
+                 };
+             }).filter(x => x);
+        }
+        return Array.from(checkboxes).map(chk => {
+            const row = chk.closest('tr');
+            const cols = row.querySelectorAll('td');
+            return {
+                prod: cols[1].innerText, ref: cols[2].innerText, 
+                tipo: cols[3].innerText, cant: cols[4].innerText, fecha: cols[5].innerText
+            };
+        });
+    }
+
+    function exportarExcel() {
+        const data = getSelectedRows();
+        if(data.length === 0) return alert("No hay datos para exportar");
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Producto,Referencia,Tipo,Cantidad,Fecha\n"; 
+        data.forEach(row => { csvContent += `${row.prod},${row.ref},${row.tipo},${row.cant},${row.fecha}\n`; });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "reporte_inventario.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function enviarCorreo() {
+        const data = getSelectedRows();
+        if(data.length === 0) return alert("No hay datos");
+        let body = "REPORTE DE MOVIMIENTOS - ALP 13%0D%0A%0D%0A";
+        data.forEach(row => { body += `Prod: ${row.prod} | Tipo: ${row.tipo} | Cant: ${row.cant} | Ref: ${row.ref} | Fecha: ${row.fecha}%0D%0A`; });
+        body += "%0D%0AGenerado por ALP 13 System";
+        window.location.href = `mailto:?subject=Reporte Inventario&body=${body}`;
+    }
+
+    function imprimirSeleccion() {
+        const checkboxes = document.querySelectorAll('.chk-print');
+        const anyChecked = Array.from(checkboxes).some(c => c.checked);
+
+        if (anyChecked) {
+            checkboxes.forEach(chk => { if(!chk.checked) chk.closest('tr').classList.add('no-print'); });
+        }
+        window.print();
+        if (anyChecked) {
+            checkboxes.forEach(chk => { chk.closest('tr').classList.remove('no-print'); });
+        }
+    }
+
+    window.onload = function() {
+        initUsuarios();
+        crearFondoNumeros();
+    };
+</script>
+</body>
+</html>
