@@ -3,7 +3,7 @@
 <head>
     <link rel="icon" href="https://i.ibb.co/bRgBcNkd/a-bold-logo-design-featuring-the-letters-em-SC-r-FBQ4-O6y0-WUPQAUu-A-ay-N6fa2-SQF6-Pw-O1r-KAR9-FA.jpg" type="image/x-icon">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ALP 13 Inventario Pro</title>
     <style>
         /* --- ESTILOS GENERALES --- */
@@ -11,6 +11,7 @@
             margin: 0; padding: 0; height: 100%; 
             font-family: 'Segoe UI', sans-serif; 
             color: #e0e0e0; 
+            background-color: #000;
             overflow-x: hidden;
         }
 
@@ -33,582 +34,565 @@
         }
         @keyframes floatUp {
             0% { transform: translateY(110vh); opacity: 0; }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
             100% { transform: translateY(-10vh); opacity: 0; }
         }
 
-        /* --- CONTENEDORES --- */
+        /* --- CONTENEDORES RESPONSIVE --- */
         .login-box, .seccion {
-            background: rgba(20, 20, 20, 0.75); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            background: rgba(20, 20, 20, 0.85); 
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             padding: 20px; margin-bottom: 20px;
+            width: 100%; box-sizing: border-box;
         }
+
+        #app-view { display: none; padding: 10px; width: 100%; max-width: 800px; margin: 0 auto; box-sizing: border-box; }
 
         h2, h3 { 
             color: #d1b3ff; border-bottom: 1px solid #4a148c; 
             padding-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 1.2rem;
         }
 
-        /* --- BUSCADOR (LUPA) --- */
-        .search-box {
-            position: relative; margin-bottom: 15px;
+        /* --- MENÚ DESPLEGABLE RESPONSIVE --- */
+        .nav-container {
+            position: relative; margin-bottom: 20px; z-index: 1000;
         }
-        .search-box input {
-            padding-left: 40px; /* Espacio para el icono */
-            border-color: #00e676;
+        .nav-toggle {
+            background: linear-gradient(90deg, #4a148c, #7b1fa2);
+            color: white; padding: 15px; border-radius: 8px;
+            cursor: pointer; font-weight: bold; display: flex;
+            justify-content: space-between; align-items: center;
+            border: 1px solid #9c27b0; user-select: none;
         }
-        .search-icon {
-            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-            font-size: 1.2em; color: #00e676;
+        .nav-toggle:hover { background: linear-gradient(90deg, #6a0dad, #8e24aa); }
+        
+        .nav-menu {
+            display: none; background: rgba(30, 10, 50, 0.95);
+            border: 1px solid #6a0dad; border-top: none;
+            border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
+            overflow: hidden; position: absolute; width: 100%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
+        .nav-menu.show { display: block; animation: slideDown 0.3s ease-out; }
+        
+        .nav-btn {
+            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: #d1b3ff; cursor: pointer; transition: 0.2s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 20px; }
+        .nav-btn.active { color: #00e676; font-weight: bold; border-left: 4px solid #00e676; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Contenido Tabs */
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active-view { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- FORMULARIOS E INPUTS --- */
+        input, select {
+            width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box;
+            border-radius: 8px; font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4a148c; color: #fff; outline: none;
+        }
+        input:focus, select:focus { border-color: #d500f9; }
 
         /* --- BOTONES --- */
         button {
-            width: 100%; padding: 12px; margin-top: 10px;
-            border: none; border-radius: 6px; font-weight: bold; font-size: 16px; cursor: pointer; color: white;
+            width: 100%; padding: 14px; margin-top: 10px;
+            border: none; border-radius: 8px; font-weight: bold; font-size: 16px; 
+            cursor: pointer; color: white;
             background: linear-gradient(90deg, #6a0dad, #9c27b0);
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.4); transition: all 0.3s ease;
+            transition: transform 0.2s;
         }
-        button:active { transform: scale(0.97); }
-        button:hover { box-shadow: 0 0 20px rgba(138, 43, 226, 0.8); }
-
-        button.borrar { width: auto; padding: 6px 15px; font-size: 0.8em; background: linear-gradient(90deg, #880e4f, #c2185b); }
-        button.btn-logout { width: auto; background: #333; border: 1px solid #555; box-shadow: none; }
+        button:active { transform: scale(0.98); }
         
-        /* Botones de acción reporte */
-        .btn-action { width: auto; padding: 8px 15px; font-size: 0.9em; margin-right: 5px; }
-        .btn-excel { background: linear-gradient(90deg, #1b5e20, #4caf50); }
-        .btn-email { background: linear-gradient(90deg, #0d47a1, #2196f3); }
-        .btn-print { background: linear-gradient(90deg, #e65100, #ff9800); }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-logout { width: auto; background: #333; padding: 8px 12px; font-size: 0.8rem; margin: 0; }
         
-        /* Botón toggle login */
-        .btn-link { 
-            background: none; border: none; box-shadow: none; 
-            color: #ea80fc; text-decoration: underline; font-size: 0.9em; margin-top: 15px;
-        }
-        .btn-link:hover { box-shadow: none; color: #fff; }
-
-        /* --- INPUTS --- */
-        input, select {
-            width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box;
-            border-radius: 6px; font-size: 16px;
-            background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4a148c; color: #fff; outline: none;
-        }
-        input:focus, select:focus { border-color: #d500f9; box-shadow: 0 0 8px rgba(213, 0, 249, 0.3); }
-
-        /* --- TABLAS --- */
-        .tabla-container { overflow-x: auto; max-height: 400px; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border-bottom: 1px solid #444; padding: 12px; text-align: left; font-size: 0.9em; }
-        th { color: #d500f9; text-transform: uppercase; font-size: 0.8em; border-bottom: 2px solid #6a0dad; position: sticky; top: 0; background: #1a0b2e; z-index: 10; }
-        td { color: #ddd; }
+        /* Botones Acción (Responsive Grid) */
+        .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .btn-action { margin: 0; font-size: 0.85rem; padding: 10px; }
+        .btn-full { grid-column: span 2; } /* Botón imprimir ocupa todo el ancho */
         
-        /* --- VIDEO FOOTER --- */
-        .video-container {
-            width: 100%; max-width: 600px; margin: 20px auto;
-            border: 2px solid #4a148c; border-radius: 10px; overflow: hidden;
-            box-shadow: 0 0 20px rgba(106, 13, 173, 0.5);
-        }
-        .video-container iframe { width: 100%; height: 315px; border: none; }
+        .btn-excel { background: #2e7d32; }
+        .btn-email { background: #1565c0; }
+        .btn-print { background: #ef6c00; }
 
-        /* --- LOGIN & APP LAYOUT --- */
+        /* --- TABLAS RESPONSIVE --- */
+        .tabla-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #444; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; /* Asegura scroll horizontal en móviles */ }
+        th, td { padding: 10px; text-align: left; font-size: 0.9em; border-bottom: 1px solid #333; }
+        th { background: #1a0b2e; color: #ea80fc; position: sticky; top: 0; }
+        .prod-img { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
+
+        /* --- LOGIN --- */
         #login-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
+            padding: 20px; box-sizing: border-box;
         }
-        .login-inner { width: 85%; max-width: 320px; text-align: center; position: relative; }
-        .error-msg { color: #ff5252; display: none; margin-top: 10px; font-size: 0.9em; }
-        .success-msg { color: #00e676; display: none; margin-top: 10px; font-size: 0.9em; }
-        
-        #app-view { display: none; padding: 15px; padding-bottom: 40px; }
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid #6a0dad; }
-        a { color: #ea80fc; text-decoration: none; font-weight: bold; }
-        .footer-credit { text-align: center; font-size: 0.7em; color: #888; margin-top: 30px; letter-spacing: 1px; width: 100%; font-weight: bold; }
-        .login-footer { position: absolute; bottom: 15px; }
+        .login-inner { max-width: 350px; }
 
-        /* --- ESTILOS DE IMPRESIÓN --- */
+        /* --- SLIDER RESPONSIVE --- */
+        .slider-wrapper {
+            width: 100%; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 0 15px rgba(106, 13, 173, 0.5); background: #000;
+            aspect-ratio: 16/9; /* Mantiene proporción en cualquier pantalla */
+        }
+        .slider-track { display: flex; width: 400%; animation: slideAnimation 16s infinite; height: 100%; }
+        .slide-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        @keyframes slideAnimation {
+            0%, 20% { margin-left: 0; }
+            25%, 45% { margin-left: -100%; }
+            50%, 70% { margin-left: -200%; }
+            75%, 95% { margin-left: -300%; }
+            100% { margin-left: 0; }
+        }
+
+        .footer-credit { text-align: center; font-size: 0.7em; color: #777; margin-top: 20px; width: 100%; }
+
+        /* --- IMPRESIÓN --- */
         @media print {
-            body { background: white; color: black; animation: none; }
-            .bg-number, .header-bar button, .seccion h3, input, select, button, .video-container, .footer-credit, .login-box, .search-box { display: none; }
-            #app-view, .seccion { display: block; background: white; border: none; box-shadow: none; padding: 0; margin: 0; }
-            .seccion { border-bottom: 2px solid #000; margin-bottom: 20px; }
-            table { width: 100%; border: 1px solid #000; }
-            th, td { border: 1px solid #000; color: #000; }
-            th { background-color: #eee; }
-            .no-print { display: none !important; }
-            #titulo-impresion { display: block !important; text-align: center; font-size: 20px; margin-bottom: 10px; }
+            .no-print, .nav-container, .header-bar button, .bg-number { display: none !important; }
+            body, .seccion { background: white !important; color: black !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
+            #app-view { display: block !important; width: 100% !important; max-width: none !important; }
+            .tab-content { display: none; }
+            .tab-content.active-view { display: block; }
+            table { width: 100%; border: 1px solid black; }
+            th, td { border: 1px solid black; color: black; }
+            #titulo-impresion { display: block !important; text-align: center; margin-bottom: 20px; }
         }
         #titulo-impresion { display: none; }
-
     </style>
 </head>
 <body>
 
-    <!-- FONDO DE NÚMEROS -->
+    <!-- FONDO FLOTANTE -->
     <div id="bg-numbers"></div>
 
-    <!-- 1. PANTALLA DE ACCESO Y REGISTRO -->
+    <!-- 1. LOGIN -->
     <div id="login-view">
         <div class="login-box login-inner">
-            <h2 style="border:none; font-size: 2.5em; text-shadow: 0 0 15px #aa00ff; margin-bottom: 10px;">ALP 13</h2>
+            <h2 style="border:none; text-align:center; font-size: 2em; text-shadow: 0 0 10px #aa00ff; margin: 0 0 20px 0;">ALP 13</h2>
             
-            <!-- Formulario Login -->
             <div id="form-login">
                 <input type="text" id="log_user" placeholder="Usuario">
                 <input type="password" id="log_pass" placeholder="Contraseña">
                 <button onclick="iniciarSesion()">INGRESAR</button>
-                <button class="btn-link" onclick="toggleRegistro()">¿No tienes cuenta? Regístrate</button>
-                <p id="error_msg" class="error-msg">Datos incorrectos</p>
+                <button class="btn-link" style="background:none; border:none; color:#d1b3ff; text-decoration:underline; font-size:0.9em; margin-top:10px;" onclick="toggleRegistro()">Crear cuenta</button>
+                <p id="error_msg" style="color:red; display:none; text-align:center;">Datos incorrectos</p>
             </div>
 
-            <!-- Formulario Registro -->
             <div id="form-register" style="display:none;">
-                <h3 style="border:none; font-size:1.2em; color:#fff;">Crear Usuario</h3>
+                <h3 style="border:none; color:white; text-align:center;">Registro</h3>
                 <input type="text" id="reg_user" placeholder="Nuevo Usuario">
                 <input type="password" id="reg_pass" placeholder="Nueva Contraseña">
                 <button onclick="registrarUsuario()" style="background: linear-gradient(90deg, #00c853, #64dd17);">REGISTRARSE</button>
-                <button class="btn-link" onclick="toggleRegistro()">Volver al Login</button>
-                <p id="reg_msg" class="success-msg">¡Usuario creado!</p>
+                <button class="btn-link" style="background:none; border:none; color:#d1b3ff; margin-top:10px;" onclick="toggleRegistro()">Volver</button>
+                <p id="reg_msg" style="color:#00e676; display:none; text-align:center;">Usuario creado</p>
             </div>
-
         </div>
-        <div class="footer-credit login-footer">DEVELOPER - ROBERT PARACO 2025</div>
+        <div class="footer-credit" style="position:fixed; bottom:10px;">DEV - ROBERT PARACO 2025</div>
     </div>
 
-    <!-- 2. PANTALLA PRINCIPAL (APP) -->
+    <!-- 2. APP PRINCIPAL -->
     <div id="app-view">
         <div class="header-bar">
-            <h2>📦 INVENTARIO</h2>
+            <h2 style="margin:0; font-size:1.5rem;">📦 ALP 13</h2>
             <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
         </div>
 
-        <!-- SECCIÓN: NUEVO PRODUCTO -->
+        <!-- MENÚ DESPLEGABLE -->
+        <div class="nav-container no-print">
+            <div class="nav-toggle" onclick="toggleMenu()">
+                <span id="menu-title">☰ MENÚ DE OPCIONES</span>
+                <span>▼</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-btn active" onclick="navegar('view-inventario', 'Inventario')">📋 Inventario</div>
+                <div class="nav-btn" onclick="navegar('view-movimientos', 'Movimientos')">🔄 Registrar Movimiento</div>
+                <div class="nav-btn" onclick="navegar('view-reportes', 'Reportes')">📊 Reportes e Historial</div>
+            </div>
+        </div>
+
+        <!-- VISTA 1: INVENTARIO -->
+        <div id="view-inventario" class="tab-content active-view">
+            <div class="seccion no-print">
+                <h3>+ Nuevo Producto</h3>
+                <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
+                <input type="text" id="inp_nombre" placeholder="Nombre Producto">
+                <input type="text" id="inp_ubicacion" placeholder="Ubicación">
+                <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
+                <label style="color:#aaa; font-size:0.9em;">Foto (Opcional):</label>
+                <input type="file" id="inp_foto" accept="image/*">
+                <button onclick="agregarProducto()">GUARDAR</button>
+            </div>
+
+            <div class="seccion">
+                <h3>🔍 Buscar Producto</h3>
+                <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Escribe nombre o código...">
+                
+                <div class="tabla-container">
+                    <table>
+                        <thead>
+                            <tr><th>Img</th><th>Info</th><th>Stock</th><th>Acción</th></tr>
+                        </thead>
+                        <tbody id="tablaProductos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: MOVIMIENTOS -->
+        <div id="view-movimientos" class="tab-content">
+            <div class="seccion">
+                <h3>Registrar E/S</h3>
+                <label style="color:#d1b3ff; font-size:0.9em;">Producto:</label>
+                <select id="sel_movProd_input"></select>
+                
+                <div style="display:flex; gap:10px;">
+                    <select id="sel_tipo" style="flex:1;">
+                        <option value="ENTRADA">🟢 Entrada</option>
+                        <option value="SALIDA">🔴 Salida</option>
+                    </select>
+                    <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
+                </div>
+                
+                <input type="text" id="inp_referencia" placeholder="Referencia / Nota">
+                <button onclick="agregarMovimiento()">CONFIRMAR</button>
+            </div>
+        </div>
+
+        <!-- VISTA 3: REPORTES -->
+        <div id="view-reportes" class="tab-content">
+            <div class="seccion">
+                <h3 class="no-print">Historial</h3>
+                <h2 id="titulo-impresion">Reporte de Inventario</h2>
+                
+                <div class="no-print" style="margin-bottom:15px;">
+                    <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
+                </div>
+
+                <div class="action-buttons no-print">
+                    <button class="btn-action btn-excel" onclick="exportarExcel()">Excel</button>
+                    <button class="btn-action btn-email" onclick="enviarCorreo()">Email</button>
+                    <button class="btn-action btn-print btn-full" onclick="imprimirSeleccion()">Imprimir Reporte</button>
+                </div>
+
+                <div class="tabla-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="no-print">✔</th>
+                                <th>Prod.</th>
+                                <th>Tipo</th>
+                                <th>Cant</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaMovProd"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDER IMÁGENES -->
         <div class="seccion no-print">
-            <h3>+ Nuevo Producto</h3>
-            <input type="text" id="inp_codigo" placeholder="Código (ej. P-01)">
-            <input type="text" id="inp_nombre" placeholder="Nombre del Producto">
-            <input type="text" id="inp_ubicacion" placeholder="Ubicación (ej. Estante A)">
-            <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
-            <label style="color:#d1b3ff; font-size:0.9em; display:block; margin-top:5px;">Foto:</label>
-            <input type="file" id="inp_foto" accept="image/*">
-            <button onclick="agregarProducto()">GUARDAR</button>
-        </div>
-
-        <!-- SECCIÓN: ESTADO ACTUAL (CON BUSCADOR) -->
-        <div class="seccion no-print">
-            <h3>Estado Actual</h3>
-            
-            <!-- BUSCADOR CON LUPA -->
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Buscar por nombre o código...">
-            </div>
-
-            <div class="tabla-container">
-                <table>
-                    <thead>
-                        <tr><th>Img</th><th>Datos & QR</th><th>Cant.</th><th>Opción</th></tr>
-                    </thead>
-                    <tbody id="tablaProductos"></tbody>
-                </table>
+            <h3 style="text-align:center; border:none;">Galería</h3>
+            <div class="slider-wrapper">
+                <div class="slider-track">
+                    <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80" class="slide-img">
+                    <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80" class="slide-img">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80" class="slide-img">
+                    <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=800&q=80" class="slide-img">
+                </div>
             </div>
         </div>
 
-        <!-- SECCIÓN: REGISTRAR MOVIMIENTO -->
-        <div class="seccion no-print">
-            <h3>Registrar Movimiento</h3>
-            <label style="color:#d1b3ff; font-size:0.8em;">Seleccionar Producto:</label>
-            <select id="sel_movProd_input"></select>
-            <div style="display:flex; gap:10px;">
-                <select id="sel_tipo" style="flex:1;">
-                    <option value="ENTRADA">Entrada (+)</option>
-                    <option value="SALIDA">Salida (-)</option>
-                </select>
-                <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
-            </div>
-            <input type="text" id="inp_referencia" placeholder="Ref: Orden Producción / Nota">
-            <button onclick="agregarMovimiento()">REGISTRAR</button>
-        </div>
-
-        <!-- SECCIÓN: HISTORIAL Y REPORTES -->
-        <div class="seccion" id="area-impresion">
-            <h3 class="no-print">Historial y Reportes</h3>
-            <h2 id="titulo-impresion">Reporte de Movimientos - ALP 13</h2>
-            
-            <div class="no-print" style="margin-bottom: 15px;">
-                <label style="color:#d1b3ff; font-size:0.8em;">Filtrar por producto:</label>
-                <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="no-print" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
-                <button class="btn-action btn-excel" onclick="exportarExcel()">Descargar Excel</button>
-                <button class="btn-action btn-email" onclick="enviarCorreo()">Enviar Correo</button>
-                <button class="btn-action btn-print" onclick="imprimirSeleccion()">Imprimir Selección</button>
-            </div>
-
-            <div class="tabla-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="no-print" style="width:30px;">✔</th>
-                            <th>Producto</th><th>Ref.</th><th>Tipo</th><th>Cant</th><th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaMovProd"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SECCIÓN: VIDEO AL PIE DE PÁGINA -->
-        <div class="seccion no-print">
-            <h3>Video Institucional</h3>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/lxRwEPvL-mQ?si=7B5" title="Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        </div>
-
-        <!-- CREDITOS -->
         <div class="footer-credit no-print">DEVELOPER - ROBERT PARACO 2025</div>
     </div>
 
 <script>
-    // --- GESTIÓN DE USUARIOS Y REGISTRO ---
+    // --- LÓGICA DEL MENÚ DESPLEGABLE ---
+    function toggleMenu() {
+        const menu = document.getElementById('navMenu');
+        menu.classList.toggle('show');
+    }
+
+    function navegar(vistaId, nombreVista) {
+        // Cerrar menú
+        document.getElementById('navMenu').classList.remove('show');
+        
+        // Cambiar título del menú
+        document.getElementById('menu-title').innerHTML = "☰ " + nombreVista;
+
+        // Ocultar vistas
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-view'));
+        
+        // Mostrar vista elegida
+        document.getElementById(vistaId).classList.add('active-view');
+        
+        // Actualizar datos si es necesario
+        if(vistaId !== 'view-inventario') actualizarTodo();
+    }
+
+    // --- LÓGICA DE USUARIOS ---
     function initUsuarios() {
-        let users = JSON.parse(localStorage.getItem("alp13_users"));
-        if (!users) {
-            const defaultUser = [{ user: "admin", pass: "1234" }];
-            localStorage.setItem("alp13_users", JSON.stringify(defaultUser));
+        if(!localStorage.getItem("alp13_users")) {
+            localStorage.setItem("alp13_users", JSON.stringify([{user:"admin", pass:"1234"}]));
         }
     }
 
     function toggleRegistro() {
-        const loginDiv = document.getElementById("form-login");
-        const regDiv = document.getElementById("form-register");
-        const err = document.getElementById("error_msg");
-        const msg = document.getElementById("reg_msg");
-        
-        err.style.display = 'none';
-        msg.style.display = 'none';
-
-        if(loginDiv.style.display === "none"){
-            loginDiv.style.display = "block";
-            regDiv.style.display = "none";
-        } else {
-            loginDiv.style.display = "none";
-            regDiv.style.display = "block";
-        }
+        const login = document.getElementById("form-login");
+        const reg = document.getElementById("form-register");
+        login.style.display = (login.style.display === "none") ? "block" : "none";
+        reg.style.display = (reg.style.display === "block") ? "none" : "block";
+        document.getElementById("error_msg").style.display = "none";
+        document.getElementById("reg_msg").style.display = "none";
     }
 
     function registrarUsuario() {
         const u = document.getElementById("reg_user").value.trim();
         const p = document.getElementById("reg_pass").value.trim();
-        const msg = document.getElementById("reg_msg");
-        
-        if(!u || !p) { alert("Llena todos los campos"); return; }
+        if(!u || !p) return alert("Faltan datos");
 
         let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
-        
-        // Verificar duplicados
-        if(users.some(x => x.user === u)){
-            alert("El usuario ya existe");
-            return;
-        }
+        if(users.some(x => x.user === u)) return alert("Usuario existe");
 
-        users.push({ user: u, pass: p });
+        users.push({user: u, pass: p});
         localStorage.setItem("alp13_users", JSON.stringify(users));
         
+        const msg = document.getElementById("reg_msg");
+        msg.innerText = "¡Usuario Creado!";
         msg.style.display = "block";
-        msg.innerText = "¡Usuario Creado! Ahora ingresa.";
-        
-        document.getElementById("reg_user").value = "";
-        document.getElementById("reg_pass").value = "";
-        
-        setTimeout(() => { toggleRegistro(); }, 1500);
+        setTimeout(() => toggleRegistro(), 1500);
     }
 
     function iniciarSesion() {
         const u = document.getElementById("log_user").value.trim();
         const p = document.getElementById("log_pass").value.trim();
-        const err = document.getElementById("error_msg");
         let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
-        const valid = users.find(x => x.user === u && x.pass === p);
-
-        if(valid) {
+        
+        if(users.some(x => x.user === u && x.pass === p)) {
             document.getElementById("login-view").style.display = "none";
             document.getElementById("app-view").style.display = "block";
             actualizarTodo();
         } else {
-            err.style.display = "block";
+            document.getElementById("error_msg").style.display = "block";
         }
     }
 
     function cerrarSesion() {
         alert("PROGRAMADOR - ROBERT PARACO 2025");
-        document.getElementById("app-view").style.display = "none";
-        document.getElementById("login-view").style.display = "flex";
-        document.getElementById("log_pass").value = "";
-        document.getElementById("error_msg").style.display = "none";
+        location.reload(); 
     }
 
     // --- LÓGICA DEL SISTEMA ---
     let productos = JSON.parse(localStorage.getItem("alp13_productos")) || [];
     let movimientos = JSON.parse(localStorage.getItem("alp13_mov")) || [];
 
-    function crearFondoNumeros() {
-        const container = document.getElementById("bg-numbers");
-        for (let i = 0; i < 30; i++) {
-            let num = document.createElement("div");
-            num.classList.add("bg-number");
-            num.innerText = Math.floor(Math.random() * 10);
-            num.style.left = Math.random() * 100 + "vw";
-            num.style.fontSize = (Math.random() * 20 + 15) + "px";
-            num.style.animationDuration = (Math.random() * 5 + 4) + "s";
-            num.style.animationDelay = (Math.random() * 5) + "s";
-            container.appendChild(num);
-        }
-    }
-
-    const getBase64 = (file) => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+    const getBase64 = (file) => new Promise((resolve,reject) => {
+        const r = new FileReader(); r.readAsDataURL(file);
+        r.onload = () => resolve(r.result); r.onerror = error => reject(error);
     });
 
     async function agregarProducto() {
-        const codigo = document.getElementById("inp_codigo").value;
-        const nombre = document.getElementById("inp_nombre").value;
-        const ubicacion = document.getElementById("inp_ubicacion").value;
-        const saldo = parseInt(document.getElementById("inp_saldo").value) || 0;
-        const fileInput = document.getElementById("inp_foto");
-        
-        if(!codigo || !nombre) { alert("Nombre y Código obligatorios"); return; }
+        const cod = document.getElementById("inp_codigo").value;
+        const nom = document.getElementById("inp_nombre").value;
+        const ubi = document.getElementById("inp_ubicacion").value;
+        const sal = parseInt(document.getElementById("inp_saldo").value) || 0;
+        const file = document.getElementById("inp_foto");
 
-        let fotoBase64 = "https://via.placeholder.com/50/220033/ffffff?text=IMG";
-        if (fileInput.files.length > 0) {
-            try { fotoBase64 = await getBase64(fileInput.files[0]); } catch (e) {}
+        if(!cod || !nom) return alert("Código y Nombre requeridos");
+
+        let foto = "https://via.placeholder.com/50/4a148c/ffffff?text=IMG";
+        if(file.files.length > 0) {
+            try { foto = await getBase64(file.files[0]); } catch(e){}
         }
 
-        const datosQR = `ID:${codigo} | Prod:${nombre} | Loc:${ubicacion} | Stock:${saldo}`;
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(datosQR)}`;
+        const dataQR = `ID:${cod}|Pr:${nom}|Ub:${ubi}|St:${sal}`;
+        const qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dataQR)}`;
 
-        productos.push({ codigo, nombre, ubicacion, saldo, foto: fotoBase64, qr: qrUrl });
+        productos.push({ codigo:cod, nombre:nom, ubicacion:ubi, saldo:sal, foto:foto, qr:qr });
         productos.sort((a,b)=> a.nombre.localeCompare(b.nombre));
         
         guardar();
-        limpiarInputs();
-        alert("Producto Guardado con QR Único");
+        document.getElementById("inp_codigo").value = "";
+        document.getElementById("inp_nombre").value = "";
+        document.getElementById("inp_ubicacion").value = "";
+        document.getElementById("inp_saldo").value = "";
+        document.getElementById("inp_foto").value = "";
+        
+        alert("Producto Guardado");
+        mostrar();
     }
 
-    function agregarMovimiento(){
-        const nombreProd = document.getElementById("sel_movProd_input").value;
+    function agregarMovimiento() {
+        const prodName = document.getElementById("sel_movProd_input").value;
         const tipo = document.getElementById("sel_tipo").value;
         const cant = parseInt(document.getElementById("inp_cantidad").value);
         const ref = document.getElementById("inp_referencia").value || "-";
 
-        if(!nombreProd || !cant) return alert("Falta producto o cantidad");
+        if(!prodName || !cant) return alert("Faltan datos");
 
-        let index = productos.findIndex(p => p.nombre === nombreProd);
-        if(index === -1) return;
+        let idx = productos.findIndex(p => p.nombre === prodName);
+        if(idx === -1) return;
 
-        if(tipo === "ENTRADA") {
-            productos[index].saldo += cant;
-        } else {
-            if(productos[index].saldo < cant) return alert("Saldo insuficiente");
-            productos[index].saldo -= cant;
+        if(tipo === "ENTRADA") productos[idx].saldo += cant;
+        else {
+            if(productos[idx].saldo < cant) return alert("Stock insuficiente");
+            productos[idx].saldo -= cant;
         }
+
+        // Actualizar QR
+        let p = productos[idx];
+        const dataQR = `ID:${p.codigo}|Pr:${p.nombre}|Ub:${p.ubicacion}|St:${p.saldo}`;
+        p.qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dataQR)}`;
+
+        movimientos.push({ producto:prodName, tipo:tipo, cantidad:cant, referencia:ref, fecha: new Date().toLocaleString() });
         
-        const p = productos[index];
-        const nuevosDatosQR = `ID:${p.codigo} | Prod:${p.nombre} | Loc:${p.ubicacion} | Stock:${p.saldo}`;
-        p.qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(nuevosDatosQR)}`;
-
-        movimientos.push({
-            producto: nombreProd, tipo, cantidad: cant, referencia: ref,
-            fecha: new Date().toLocaleString()
-        });
-
+        guardar();
         document.getElementById("inp_cantidad").value = "";
         document.getElementById("inp_referencia").value = "";
-        guardar();
-        alert("Movimiento OK");
+        alert("Movimiento Registrado");
     }
 
-    function borrarProducto(i){
-        if(confirm("¿Eliminar producto?")){
-            productos.splice(i,1);
+    function borrarProducto(idx) {
+        if(confirm("¿Borrar producto?")) {
+            productos.splice(idx,1);
             guardar();
         }
     }
 
-    function guardar(){
+    function guardar() {
         localStorage.setItem("alp13_productos", JSON.stringify(productos));
         localStorage.setItem("alp13_mov", JSON.stringify(movimientos));
         actualizarTodo();
     }
 
-    // --- FUNCIÓN MOSTRAR (MODIFICADA PARA BUSCADOR) ---
-    function mostrar(listaData = productos){
+    function mostrar(lista = productos) {
         const t = document.getElementById("tablaProductos");
         t.innerHTML = "";
-        if(listaData.length === 0){ t.innerHTML = "<tr><td colspan='4'>No encontrado</td></tr>"; return; }
+        if(lista.length === 0) { t.innerHTML = "<tr><td colspan='4'>Vacío</td></tr>"; return; }
 
-        listaData.forEach((p)=>{
-            // Encontrar el índice original para poder borrar correctamente
-            const originalIndex = productos.findIndex(prod => prod.nombre === p.nombre);
-            
+        lista.forEach(p => {
+            let realIdx = productos.findIndex(x => x.nombre === p.nombre);
             t.innerHTML += `
             <tr>
                 <td><img src="${p.foto}" class="prod-img"></td>
                 <td>
-                    <b style="color:#fff;">${p.nombre}</b><br>
-                    <small style="color:#d1b3ff;">ID: ${p.codigo}</small><br>
-                    <small style="color:#888;">Ubi: ${p.ubicacion}</small>
+                    <b style="color:white;">${p.nombre}</b><br>
+                    <small style="color:#aaa;">ID:${p.codigo}</small><br>
+                    <small style="color:#d1b3ff;">${p.ubicacion}</small>
                 </td>
-                <td style="font-size:1.1em; color:#e040fb; font-weight:bold;">${p.saldo}</td>
+                <td style="font-weight:bold; color:#00e676; font-size:1.1em;">${p.saldo}</td>
                 <td>
-                    <button class="borrar" onclick="borrarProducto(${originalIndex})">X</button>
-                    <a href="${p.qr}" download="QR_${p.codigo}.png" target="_blank">
-                        <img src="${p.qr}" style="width:50px; margin-top:5px; border:2px solid white;">
-                    </a>
+                    <button onclick="borrarProducto(${realIdx})" style="padding:5px; width:auto; background:#d32f2f;">🗑</button>
+                    <a href="${p.qr}" download target="_blank"><img src="${p.qr}" style="width:30px; margin-left:5px;"></a>
                 </td>
             </tr>`;
         });
     }
 
-    // --- FUNCIÓN BUSCADOR ---
     function buscarProducto() {
-        const termino = document.getElementById("inp_buscar").value.toLowerCase();
-        const filtrados = productos.filter(p => 
-            p.nombre.toLowerCase().includes(termino) || 
-            p.codigo.toLowerCase().includes(termino)
-        );
-        mostrar(filtrados);
+        const val = document.getElementById("inp_buscar").value.toLowerCase();
+        const f = productos.filter(p => p.nombre.toLowerCase().includes(val) || p.codigo.toLowerCase().includes(val));
+        mostrar(f);
     }
 
-    function mostrarMovPorProducto(){
-        const sel = document.getElementById("sel_movProd").value;
+    function mostrarMovPorProducto() {
+        const filter = document.getElementById("sel_movProd").value;
         const t = document.getElementById("tablaMovProd");
         t.innerHTML = "";
-        
-        let lista = movimientos.slice().reverse();
-        if(sel && sel !== "TODOS") {
-            lista = lista.filter(m => m.producto === sel);
-        }
 
-        if(lista.length === 0) { t.innerHTML = "<tr><td colspan='6'>Sin datos</td></tr>"; return; }
+        let data = movimientos.slice().reverse();
+        if(filter && filter !== "TODOS") data = data.filter(m => m.producto === filter);
 
-        lista.forEach((x, index) => {
-            let color = x.tipo === 'ENTRADA' ? '#00e676' : '#ff1744';
+        if(data.length === 0) { t.innerHTML = "<tr><td colspan='5'>Sin movimientos</td></tr>"; return; }
+
+        data.forEach((m, i) => {
+            let col = m.tipo === "ENTRADA" ? "#00e676" : "#ff1744";
             t.innerHTML += `
             <tr>
-                <td class="no-print"><input type="checkbox" class="chk-print" value="${index}"></td>
-                <td>${x.producto}</td>
-                <td style="color:#fff; font-size:0.85em;">${x.referencia}</td>
-                <td style="color:${color}; font-weight:bold; font-size:0.8em;">${x.tipo}</td>
-                <td style="font-weight:bold;">${x.cantidad}</td>
-                <td style="color:#aaa; font-size:0.7em;">${x.fecha}</td>
+                <td class="no-print"><input type="checkbox" class="chk-print"></td>
+                <td>${m.producto}<br><small style="color:#aaa">${m.referencia}</small></td>
+                <td style="color:${col}; font-weight:bold;">${m.tipo.substring(0,3)}</td>
+                <td style="font-weight:bold;">${m.cantidad}</td>
+                <td style="font-size:0.75em; color:#bbb;">${m.fecha.split(',')[0]}</td>
             </tr>`;
         });
     }
 
-    function cargarSelect(){
+    function cargarSelects() {
         const s1 = document.getElementById("sel_movProd");
         const s2 = document.getElementById("sel_movProd_input");
-        const prev1 = s1.value; const prev2 = s2.value;
+        const v1 = s1.value, v2 = s2.value;
+
+        let ops = productos.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('');
+        s1.innerHTML = `<option value="TODOS">Todo</option>` + ops;
+        s2.innerHTML = ops;
         
-        s1.innerHTML = `<option value="TODOS">-- Todos --</option>`;
-        s2.innerHTML = "";
-        
-        productos.forEach(p => {
-            s1.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-            s2.innerHTML += `<option value="${p.nombre}">${p.nombre}</option>`;
-        });
-        
-        if(prev1) s1.value = prev1;
-        if(prev2) s2.value = prev2;
+        if(v1) s1.value = v1;
+        if(v2) s2.value = v2;
     }
 
-    function limpiarInputs(){
-        ["inp_codigo","inp_nombre","inp_ubicacion","inp_saldo","inp_foto"].forEach(id => document.getElementById(id).value = "");
+    function actualizarTodo() {
+        cargarSelects(); mostrar(); mostrarMovPorProducto();
     }
 
-    function actualizarTodo(){
-        cargarSelect(); mostrar(); mostrarMovPorProducto();
-    }
-
-    // --- REPORTES ---
-    function getSelectedRows() {
-        const checkboxes = document.querySelectorAll('.chk-print:checked');
-        const visibleRows = Array.from(document.querySelectorAll('#tablaMovProd tr'));
-        
-        if(checkboxes.length === 0) {
-             return visibleRows.map(tr => {
-                 const cols = tr.querySelectorAll('td');
-                 if(cols.length < 2) return null; 
-                 return {
-                    prod: cols[1].innerText, ref: cols[2].innerText, 
-                    tipo: cols[3].innerText, cant: cols[4].innerText, fecha: cols[5].innerText
-                 };
-             }).filter(x => x);
-        }
-        return Array.from(checkboxes).map(chk => {
-            const row = chk.closest('tr');
-            const cols = row.querySelectorAll('td');
-            return {
-                prod: cols[1].innerText, ref: cols[2].innerText, 
-                tipo: cols[3].innerText, cant: cols[4].innerText, fecha: cols[5].innerText
-            };
-        });
+    // --- UTILS REPORTES ---
+    function getSelected() {
+        const chks = document.querySelectorAll('.chk-print:checked');
+        let rows = chks.length ? Array.from(chks).map(c=>c.closest('tr')) : Array.from(document.querySelectorAll('#tablaMovProd tr'));
+        return rows.map(r => {
+            let d = r.querySelectorAll('td');
+            if(!d.length) return null;
+            return [d[1].innerText, d[2].innerText, d[3].innerText, d[4].innerText].join(',');
+        }).filter(x=>x);
     }
 
     function exportarExcel() {
-        const data = getSelectedRows();
-        if(data.length === 0) return alert("No hay datos para exportar");
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Producto,Referencia,Tipo,Cantidad,Fecha\n"; 
-        data.forEach(row => { csvContent += `${row.prod},${row.ref},${row.tipo},${row.cant},${row.fecha}\n`; });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "reporte_inventario.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const csv = "Producto/Ref,Tipo,Cant,Fecha\n" + getSelected().join('\n');
+        const a = document.createElement('a');
+        a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+        a.download = 'reporte_alp13.csv';
+        a.click();
     }
 
     function enviarCorreo() {
-        const data = getSelectedRows();
-        if(data.length === 0) return alert("No hay datos");
-        let body = "REPORTE DE MOVIMIENTOS - ALP 13%0D%0A%0D%0A";
-        data.forEach(row => { body += `Prod: ${row.prod} | Tipo: ${row.tipo} | Cant: ${row.cant} | Ref: ${row.ref} | Fecha: ${row.fecha}%0D%0A`; });
-        body += "%0D%0AGenerado por ALP 13 System";
-        window.location.href = `mailto:?subject=Reporte Inventario&body=${body}`;
+        const body = getSelected().join('%0D%0A');
+        window.location.href = `mailto:?subject=Reporte ALP13&body=${body}`;
     }
 
     function imprimirSeleccion() {
-        const checkboxes = document.querySelectorAll('.chk-print');
-        const anyChecked = Array.from(checkboxes).some(c => c.checked);
-
-        if (anyChecked) {
-            checkboxes.forEach(chk => { if(!chk.checked) chk.closest('tr').classList.add('no-print'); });
-        }
+        const chks = document.querySelectorAll('.chk-print');
+        const hasCheck = Array.from(chks).some(c => c.checked);
+        if(hasCheck) chks.forEach(c => { if(!c.checked) c.closest('tr').classList.add('no-print'); });
         window.print();
-        if (anyChecked) {
-            checkboxes.forEach(chk => { chk.closest('tr').classList.remove('no-print'); });
-        }
+        if(hasCheck) chks.forEach(c => c.closest('tr').classList.remove('no-print'));
     }
 
-    window.onload = function() {
+    // --- INICIO ---
+    window.onload = () => {
         initUsuarios();
-        crearFondoNumeros();
+        
+        // Generar fondo
+        const bg = document.getElementById("bg-numbers");
+        for(let i=0; i<20; i++) {
+            let d = document.createElement('div');
+            d.className = 'bg-number';
+            d.innerText = Math.floor(Math.random()*10);
+            d.style.left = Math.random()*100+'vw';
+            d.style.fontSize = (Math.random()*30+10)+'px';
+            d.style.animationDuration = (Math.random()*5+5)+'s';
+            bg.appendChild(d);
+        }
     };
 </script>
 </body>
