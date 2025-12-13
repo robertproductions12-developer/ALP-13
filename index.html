@@ -12,8 +12,7 @@
             font-family: 'Segoe UI', sans-serif; 
             color: #e0e0e0; 
             background-color: #000;
-            overflow-x: hidden;
-            position: relative;
+            overflow: hidden; /* Evita scroll en el body, lo haremos en el contenido */
         }
 
         /* FONDO GRADIENTE */
@@ -23,11 +22,8 @@
 
         /* --- ANIMACIÓN DE FONDO --- */
         #bg-container {
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%;
-            overflow: hidden; 
-            z-index: 0; 
-            pointer-events: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
         }
 
         .floating-graphic {
@@ -48,24 +44,126 @@
             100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        /* --- CONTENEDORES RESPONSIVE --- */
-        .login-box, .seccion, .nav-container, .header-bar, .dashboard-container {
-            position: relative;
-            z-index: 10; 
+        /* --- LAYOUT PRINCIPAL (SIDEBAR + CONTENIDO) --- */
+        #app-view {
+            display: none; 
+            width: 100%; height: 100%; 
+            /* Flexbox para poner sidebar y contenido lado a lado */
+            display: flex; 
+            flex-direction: row; 
+            overflow: hidden;
+        }
+        
+        /* Ocultar app-view inicialmente hasta el login */
+        body.not-logged-in #app-view { display: none !important; }
+
+        /* --- SIDEBAR LATERAL --- */
+        .sidebar {
+            width: 260px;
+            background: rgba(20, 10, 35, 0.95);
+            border-right: 1px solid #4a148c;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
         }
 
+        .sidebar-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .sidebar-title {
+            font-size: 1.8rem;
+            color: #d1b3ff;
+            text-shadow: 0 0 10px #aa00ff;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .nav-links {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid transparent;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            padding-left: 20px;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(74, 20, 140, 0.4), transparent);
+            border-left: 4px solid #00e676;
+            color: #00e676;
+            font-weight: bold;
+        }
+
+        .btn-logout {
+            padding: 12px;
+            background: rgba(255, 23, 68, 0.1);
+            color: #ff1744;
+            border: 1px solid #ff1744;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .btn-logout:hover { background: #ff1744; color: white; }
+
+        /* --- ÁREA DE CONTENIDO --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto; /* Scroll solo en el contenido */
+            position: relative;
+            z-index: 10;
+        }
+
+        /* CABECERA MÓVIL (Solo visible en pantallas pequeñas) */
+        .mobile-header {
+            display: none;
+            padding: 15px;
+            background: rgba(20, 10, 35, 0.95);
+            border-bottom: 1px solid #4a148c;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 101;
+        }
+
+        .menu-toggle {
+            background: none; border: none; color: #d1b3ff; font-size: 1.5rem; cursor: pointer;
+        }
+
+        /* --- CONTENEDORES --- */
         .login-box, .seccion {
             background: rgba(20, 20, 20, 0.85); 
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(138, 43, 226, 0.3);
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             padding: 20px; margin-bottom: 20px;
             width: 100%; box-sizing: border-box;
-            transition: all 0.3s ease;
         }
-
-        #app-view { display: none; padding: 10px; width: 100%; max-width: 800px; margin: 0 auto; box-sizing: border-box; }
 
         h2, h3 { 
             color: #d1b3ff; border-bottom: 1px solid #4a148c; 
@@ -73,78 +171,58 @@
             font-size: 1.2rem;
         }
 
-        /* --- DASHBOARD (NUEVO) --- */
+        /* --- DASHBOARD 3D --- */
+        .dashboard-container { margin-top: 20px; }
         .dash-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 10px;
+            perspective: 1000px;
         }
+
         .dash-card {
-            background: linear-gradient(135deg, rgba(74, 20, 140, 0.6), rgba(0,0,0,0.8));
+            background: linear-gradient(135deg, rgba(74, 20, 140, 0.8), rgba(10, 10, 10, 0.95));
             border: 1px solid #7b1fa2;
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 25px;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            height: 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 150px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform-style: preserve-3d;
+            transform: rotateX(0deg) rotateY(0deg);
+            transition: transform 0.1s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .dash-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(123, 31, 162, 0.4);
-            border-color: #d500f9;
+
+        .dash-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
         }
+        .dash-card:hover::before { opacity: 1; }
+        .dash-card:hover { border-color: #d500f9; box-shadow: 0 20px 40px rgba(156, 39, 176, 0.4); }
+
         .dash-icon {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            font-size: 3.5rem; margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(213, 0, 249, 0.6);
+            transform: translateZ(30px); transition: transform 0.3s;
         }
+        
         .dash-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
+            font-size: 1.3rem; font-weight: bold; color: #fff;
+            transform: translateZ(20px); transition: color 0.3s;
         }
+        .dash-card:active { transform: scale(0.95) !important; }
 
-        /* --- MENÚ DESPLEGABLE --- */
-        .nav-toggle {
-            background: linear-gradient(90deg, #4a148c, #7b1fa2);
-            color: white; padding: 15px; border-radius: 8px;
-            cursor: pointer; font-weight: bold; display: flex;
-            justify-content: space-between; align-items: center;
-            border: 1px solid #9c27b0; user-select: none;
-            box-shadow: 0 0 10px rgba(123, 31, 162, 0.5);
-        }
-        .nav-toggle:hover { background: linear-gradient(90deg, #6a0dad, #8e24aa); transform: scale(1.01); }
-        
-        .nav-menu {
-            display: none; background: rgba(30, 10, 50, 0.95);
-            border: 1px solid #6a0dad; border-top: none;
-            border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
-            overflow: hidden; position: absolute; width: 100%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            z-index: 100; 
-        }
-        .nav-menu.show { display: block; animation: slideDown 0.3s ease-out; }
-        
-        .nav-btn {
-            padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
-            color: #d1b3ff; cursor: pointer; transition: 0.3s;
-        }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 25px; }
-        .nav-btn.active { color: #00e676; font-weight: bold; border-left: 4px solid #00e676; background: rgba(0, 230, 118, 0.1); }
-
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- TRANSICIONES FLUIDAS --- */
-        .tab-content { 
-            display: none; opacity: 0; transform: translateY(20px); 
-            transition: opacity 0.5s ease, transform 0.5s ease; 
-        }
+        /* --- TRANSICIONES DE VISTAS --- */
+        .tab-content { display: none; opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease, transform 0.4s ease; }
         .tab-content.display-block { display: block; }
         .tab-content.visible { opacity: 1; transform: translateY(0); }
 
@@ -167,21 +245,17 @@
         button:hover { box-shadow: 0 0 15px rgba(156, 39, 176, 0.6); }
         button:active { transform: scale(0.96); }
         
-        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .btn-logout { width: auto; background: #333; padding: 8px 12px; font-size: 0.8rem; margin: 0; }
-        
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .btn-action { margin: 0; font-size: 0.85rem; padding: 10px; }
         .btn-full { grid-column: span 2; } 
-        
         .btn-excel { background: #2e7d32; }
         .btn-email { background: #1565c0; }
         .btn-print { background: #ef6c00; }
 
         /* --- TABLAS --- */
-        .tabla-container { overflow-x: auto; border-radius: 8px; border: 1px solid #444; }
+        .tabla-container { overflow-x: auto; border-radius: 8px; border: 1px solid #444; margin-top: 15px;}
         table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th, td { padding: 10px; text-align: left; font-size: 0.9em; border-bottom: 1px solid #333; transition: background 0.2s; }
+        th, td { padding: 10px; text-align: left; font-size: 0.9em; border-bottom: 1px solid #333; }
         th { background: #1a0b2e; color: #ea80fc; position: sticky; top: 0; }
         tr:hover td { background: rgba(255, 255, 255, 0.05); }
         .prod-img { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #d1b3ff; }
@@ -191,38 +265,53 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
             padding: 20px; box-sizing: border-box;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
             transition: opacity 0.5s ease;
         }
         .login-inner { max-width: 350px; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
         @keyframes popIn { from{ transform: scale(0.8); opacity: 0; } to{ transform: scale(1); opacity: 1; } }
 
         /* --- SLIDER --- */
         .slider-wrapper {
             width: 100%; border-radius: 12px; overflow: hidden;
             box-shadow: 0 0 15px rgba(106, 13, 173, 0.5); background: #000;
-            aspect-ratio: 16/9; 
-            position: relative; z-index: 10;
+            aspect-ratio: 16/9; position: relative; z-index: 10; margin-top: 20px;
         }
         .slider-track { display: flex; width: 400%; animation: slideAnimation 16s infinite; height: 100%; }
         .slide-img { width: 100%; height: 100%; object-fit: cover; }
-        
         @keyframes slideAnimation {
-            0%, 20% { margin-left: 0; }
-            25%, 45% { margin-left: -100%; }
-            50%, 70% { margin-left: -200%; }
-            75%, 95% { margin-left: -300%; }
-            100% { margin-left: 0; }
+            0%, 20% { margin-left: 0; } 25%, 45% { margin-left: -100%; }
+            50%, 70% { margin-left: -200%; } 75%, 95% { margin-left: -300%; } 100% { margin-left: 0; }
         }
 
-        .footer-credit { text-align: center; font-size: 0.7em; color: #777; margin-top: 20px; width: 100%; position: relative; z-index: 10; }
+        .footer-credit { text-align: center; font-size: 0.7em; color: #777; margin-top: 20px; width: 100%; }
+
+        /* --- RESPONSIVE (Móviles) --- */
+        @media (max-width: 768px) {
+            #app-view { flex-direction: column; }
+            .mobile-header { display: flex; }
+            
+            .sidebar {
+                position: fixed; top: 0; left: -280px; /* Oculto a la izquierda */
+                height: 100%; width: 280px;
+                box-shadow: 5px 0 15px rgba(0,0,0,0.8);
+                transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .sidebar.active { left: 0; } /* Mostrar menú */
+            
+            /* Capa oscura cuando el menú está abierto en móvil */
+            .sidebar-overlay {
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 99; backdrop-filter: blur(2px);
+            }
+            .sidebar-overlay.active { display: block; }
+        }
 
         /* --- IMPRESIÓN --- */
         @media print {
-            .no-print, .nav-container, .header-bar button, #bg-container, #view-dashboard { display: none !important; }
-            body, .seccion { background: white !important; color: black !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
-            #app-view { display: block !important; width: 100% !important; max-width: none !important; }
+            .no-print, .sidebar, .mobile-header, #bg-container, #view-dashboard { display: none !important; }
+            body, .seccion, #app-view, .main-content { background: white !important; color: black !important; margin: 0 !important; padding: 0 !important; height: auto !important; overflow: visible !important; display: block !important;}
             .tab-content { display: none; }
             .tab-content.display-block { display: block; opacity: 1; transform: none; }
             table { width: 100%; border: 1px solid black; }
@@ -232,7 +321,7 @@
         #titulo-impresion { display: none; }
     </style>
 </head>
-<body>
+<body class="not-logged-in">
 
     <!-- FONDO ANIMADO -->
     <div id="bg-container"></div>
@@ -241,7 +330,6 @@
     <div id="login-view">
         <div class="login-box login-inner">
             <h2 style="border:none; text-align:center; font-size: 2em; text-shadow: 0 0 10px #aa00ff; margin: 0 0 20px 0;">ALP 13</h2>
-            
             <div id="form-login">
                 <input type="text" id="log_user" placeholder="Usuario">
                 <input type="password" id="log_pass" placeholder="Contraseña">
@@ -249,7 +337,6 @@
                 <button class="btn-link" style="background:none; border:none; color:#d1b3ff; text-decoration:underline; font-size:0.9em; margin-top:10px;" onclick="toggleRegistro()">Crear cuenta</button>
                 <p id="error_msg" style="color:red; display:none; text-align:center; margin-top: 10px;">Datos incorrectos</p>
             </div>
-
             <div id="form-register" style="display:none;">
                 <h3 style="border:none; color:white; text-align:center;">Registro</h3>
                 <input type="text" id="reg_user" placeholder="Nuevo Usuario">
@@ -263,151 +350,214 @@
     </div>
 
     <!-- 2. APP PRINCIPAL -->
+    <!-- Overlay para móvil -->
+    <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Cabecera Móvil (Solo visible < 768px) -->
+    <div class="mobile-header" id="mobileHeader" style="display:none;">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <span style="font-weight:bold; color:#d1b3ff; letter-spacing:1px;">ALP 13</span>
+        <span style="width:24px;"></span> <!-- Espaciador para centrar -->
+    </div>
+
     <div id="app-view">
-        <div class="header-bar">
-            <h2 style="margin:0; font-size:1.5rem;">📦 ALP 13</h2>
-            <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
-        </div>
-
-        <!-- MENÚ DESPLEGABLE -->
-        <div class="nav-container no-print">
-            <div class="nav-toggle" onclick="toggleMenu()">
-                <span id="menu-title">☰ INICIO</span>
-                <span>▼</span>
+        
+        <!-- SIDEBAR (MENÚ LATERAL) -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">ALP 13</h1>
+                <small style="color:#777;">Inventario Pro</small>
             </div>
-            <div class="nav-menu" id="navMenu">
-                <div class="nav-btn" id="btn-dashboard" onclick="navegar('view-dashboard', 'Inicio', this)">🏠 Inicio</div>
-                <div class="nav-btn" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario</div>
-                <div class="nav-btn" id="btn-movimientos" onclick="navegar('view-movimientos', 'Movimientos', this)">🔄 Registrar Movimiento</div>
-                <div class="nav-btn" id="btn-reportes" onclick="navegar('view-reportes', 'Reportes', this)">📊 Reportes e Historial</div>
+            
+            <div class="nav-links">
+                <div class="nav-btn active" id="btn-dashboard" onclick="navegar('view-dashboard', 'Inicio', this)">
+                    <span>🏠</span> Inicio
+                </div>
+                <div class="nav-btn" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">
+                    <span>📋</span> Inventario
+                </div>
+                <div class="nav-btn" id="btn-movimientos" onclick="navegar('view-movimientos', 'Movimientos', this)">
+                    <span>🔄</span> Movimientos
+                </div>
+                <div class="nav-btn" id="btn-reportes" onclick="navegar('view-reportes', 'Reportes', this)">
+                    <span>📊</span> Reportes
+                </div>
             </div>
-        </div>
 
-        <!-- VISTA 0: DASHBOARD (NUEVO) -->
-        <div id="view-dashboard" class="tab-content display-block visible">
-            <div class="dashboard-container">
-                <h3 style="text-align:center; border:none; margin-bottom:20px;">Selecciona una opción</h3>
-                <div class="dash-grid">
-                    <div class="dash-card" onclick="irA('view-inventario', 'Inventario', 'btn-inventario')">
-                        <span class="dash-icon">📋</span>
-                        <div class="dash-title">Inventario</div>
+            <div class="btn-logout" onclick="cerrarSesion()">
+                Cerrar Sesión
+            </div>
+        </nav>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- VISTA 0: DASHBOARD 3D -->
+            <div id="view-dashboard" class="tab-content display-block visible">
+                <div class="dashboard-container">
+                    <h2 style="border:none; margin-bottom:10px;">Bienvenido</h2>
+                    <p style="color:#aaa; margin-bottom:30px;">Panel de control general</p>
+                    
+                    <div class="dash-grid">
+                        <div class="dash-card" onclick="irA('view-inventario', 'Inventario', 'btn-inventario')">
+                            <span class="dash-icon">📋</span>
+                            <div class="dash-title">Inventario</div>
+                        </div>
+                        <div class="dash-card" onclick="irA('view-movimientos', 'Movimientos', 'btn-movimientos')">
+                            <span class="dash-icon">🔄</span>
+                            <div class="dash-title">Movimientos</div>
+                        </div>
+                        <div class="dash-card" onclick="irA('view-reportes', 'Reportes', 'btn-reportes')">
+                            <span class="dash-icon">📊</span>
+                            <div class="dash-title">Reportes</div>
+                        </div>
                     </div>
-                    <div class="dash-card" onclick="irA('view-movimientos', 'Movimientos', 'btn-movimientos')">
-                        <span class="dash-icon">🔄</span>
-                        <div class="dash-title">Movimientos</div>
+
+                    <!-- SLIDER IMÁGENES -->
+                    <div class="seccion no-print" style="margin-top:40px;">
+                        <h3 style="text-align:center; border:none;">ApexGen BR</h3>
+                        <div class="slider-wrapper">
+                            <div class="slider-track">
+                                <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-1.png" class="slide-img">
+                                <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-2.png" class="slide-img">
+                                <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-3.png" class="slide-img">
+                                <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-4.png" class="slide-img">
+                            </div>
+                        </div>
                     </div>
-                    <div class="dash-card" onclick="irA('view-reportes', 'Reportes', 'btn-reportes')">
-                        <span class="dash-icon">📊</span>
-                        <div class="dash-title">Reportes</div>
+                    <div class="footer-credit no-print">DEVELOPER - ROBERT PARACO 2025</div>
+                </div>
+            </div>
+
+            <!-- VISTA 1: INVENTARIO -->
+            <div id="view-inventario" class="tab-content">
+                <h2>Gestión de Inventario</h2>
+                <div class="seccion no-print">
+                    <h3>+ Nuevo Producto</h3>
+                    <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
+                    <input type="text" id="inp_nombre" placeholder="Nombre Producto">
+                    <input type="text" id="inp_ubicacion" placeholder="Ubicación">
+                    <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
+                    <label style="color:#aaa; font-size:0.9em;">Foto (Opcional):</label>
+                    <input type="file" id="inp_foto" accept="image/*">
+                    <button onclick="agregarProducto()">GUARDAR</button>
+                </div>
+
+                <div class="seccion">
+                    <h3>🔍 Lista de Productos</h3>
+                    <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Escribe nombre o código...">
+                    <div class="tabla-container">
+                        <table>
+                            <thead>
+                                <tr><th>Img</th><th>Info</th><th>Stock</th><th>Acción</th></tr>
+                            </thead>
+                            <tbody id="tablaProductos"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- VISTA 1: INVENTARIO -->
-        <div id="view-inventario" class="tab-content">
-            <div class="seccion no-print">
-                <h3>+ Nuevo Producto</h3>
-                <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
-                <input type="text" id="inp_nombre" placeholder="Nombre Producto">
-                <input type="text" id="inp_ubicacion" placeholder="Ubicación">
-                <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
-                <label style="color:#aaa; font-size:0.9em;">Foto (Opcional):</label>
-                <input type="file" id="inp_foto" accept="image/*">
-                <button onclick="agregarProducto()">GUARDAR</button>
-            </div>
-
-            <div class="seccion">
-                <h3>🔍 Buscar Producto</h3>
-                <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Escribe nombre o código...">
-                <div class="tabla-container">
-                    <table>
-                        <thead>
-                            <tr><th>Img</th><th>Info</th><th>Stock</th><th>Acción</th></tr>
-                        </thead>
-                        <tbody id="tablaProductos"></tbody>
-                    </table>
+            <!-- VISTA 2: MOVIMIENTOS -->
+            <div id="view-movimientos" class="tab-content">
+                <h2>Entradas y Salidas</h2>
+                <div class="seccion">
+                    <h3>Registrar Movimiento</h3>
+                    <label style="color:#d1b3ff; font-size:0.9em;">Producto:</label>
+                    <select id="sel_movProd_input"></select>
+                    <div style="display:flex; gap:10px;">
+                        <select id="sel_tipo" style="flex:1;">
+                            <option value="ENTRADA">🟢 Entrada</option>
+                            <option value="SALIDA">🔴 Salida</option>
+                        </select>
+                        <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
+                    </div>
+                    <input type="text" id="inp_referencia" placeholder="Referencia / Nota">
+                    <button onclick="agregarMovimiento()">CONFIRMAR</button>
                 </div>
             </div>
-        </div>
 
-        <!-- VISTA 2: MOVIMIENTOS -->
-        <div id="view-movimientos" class="tab-content">
-            <div class="seccion">
-                <h3>Registrar E/S</h3>
-                <label style="color:#d1b3ff; font-size:0.9em;">Producto:</label>
-                <select id="sel_movProd_input"></select>
-                <div style="display:flex; gap:10px;">
-                    <select id="sel_tipo" style="flex:1;">
-                        <option value="ENTRADA">🟢 Entrada</option>
-                        <option value="SALIDA">🔴 Salida</option>
-                    </select>
-                    <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
-                </div>
-                <input type="text" id="inp_referencia" placeholder="Referencia / Nota">
-                <button onclick="agregarMovimiento()">CONFIRMAR</button>
-            </div>
-        </div>
-
-        <!-- VISTA 3: REPORTES -->
-        <div id="view-reportes" class="tab-content">
-            <div class="seccion">
-                <h3 class="no-print">Historial</h3>
-                <h2 id="titulo-impresion">Reporte de Inventario</h2>
-                <div class="no-print" style="margin-bottom:15px;">
-                    <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
-                </div>
-                <div class="action-buttons no-print">
-                    <button class="btn-action btn-excel" onclick="exportarExcel()">Excel</button>
-                    <button class="btn-action btn-email" onclick="enviarCorreo()">Email</button>
-                    <button class="btn-action btn-print btn-full" onclick="imprimirSeleccion()">Imprimir Reporte</button>
-                </div>
-                <div class="tabla-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="no-print">✔</th>
-                                <th>Prod.</th>
-                                <th>Tipo</th>
-                                <th>Cant</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaMovProd"></tbody>
-                    </table>
+            <!-- VISTA 3: REPORTES -->
+            <div id="view-reportes" class="tab-content">
+                <h2 class="no-print">Reportes</h2>
+                <div class="seccion">
+                    <h3 class="no-print">Historial de Transacciones</h3>
+                    <h2 id="titulo-impresion">Reporte de Inventario</h2>
+                    <div class="no-print" style="margin-bottom:15px;">
+                        <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
+                    </div>
+                    <div class="action-buttons no-print">
+                        <button class="btn-action btn-excel" onclick="exportarExcel()">Excel</button>
+                        <button class="btn-action btn-email" onclick="enviarCorreo()">Email</button>
+                        <button class="btn-action btn-print btn-full" onclick="imprimirSeleccion()">Imprimir Reporte</button>
+                    </div>
+                    <div class="tabla-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="no-print">✔</th>
+                                    <th>Prod.</th>
+                                    <th>Tipo</th>
+                                    <th>Cant</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaMovProd"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- SLIDER IMÁGENES -->
-        <div class="seccion no-print">
-            <h3 style="text-align:center; border:none;">ApexGen BR</h3>
-            <div class="slider-wrapper">
-                <div class="slider-track">
-                    <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-1.png" class="slide-img">
-                    <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-2.png" class="slide-img">
-                    <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-3.png" class="slide-img">
-                    <img src="https://raw.githubusercontent.com/robertproductions12-developer/ALP-13/refs/heads/main/img-4.png" class="slide-img">
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-credit no-print">DEVELOPER - ROBERT PARACO 2025</div>
+        </main>
     </div>
 
 <script>
-    // --- 1. SCRIPT DE ANIMACIÓN DE FONDO ---
+    // --- 1. INICIALIZACIÓN ---
     window.addEventListener('DOMContentLoaded', () => {
         initUsuarios();
         crearFondoAnimado();
+        iniciarEfecto3D();
+        checkMobileDisplay();
     });
 
+    window.addEventListener('resize', checkMobileDisplay);
+
+    function checkMobileDisplay() {
+        const mh = document.getElementById('mobileHeader');
+        if(window.innerWidth <= 768 && document.body.classList.contains('logged-in')) {
+            mh.style.display = 'flex';
+        } else {
+            mh.style.display = 'none';
+        }
+    }
+
+    // --- 2. SCRIPT DE MOVIMIENTO 3D ---
+    function iniciarEfecto3D() {
+        const cards = document.querySelectorAll('.dash-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; 
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -20; 
+                const rotateY = ((x - centerX) / centerX) * 20;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+            });
+            card.addEventListener('mousedown', () => {
+                 card.style.transform = `perspective(1000px) scale(0.95)`;
+            });
+        });
+    }
+
+    // --- 3. FONDO ANIMADO ---
     function crearFondoAnimado() {
         const bg = document.getElementById("bg-container");
         const chars = ['0', '1', '10', '01', '∑', 'π', '∫', '∆', 'Ω', 'β', 'λ', '{ }', '</>', '0xFF'];
-        const numElementos = 35; 
-
-        for(let i=0; i<numElementos; i++) {
+        for(let i=0; i<35; i++) {
             let el = document.createElement('div');
             el.className = 'floating-graphic';
             el.innerText = chars[Math.floor(Math.random() * chars.length)];
@@ -419,9 +569,12 @@
         }
     }
 
-    // --- 2. LÓGICA DE NAVEGACIÓN FLUIDA ---
-    function toggleMenu() {
-        document.getElementById('navMenu').classList.toggle('show');
+    // --- 4. LÓGICA DE NAVEGACIÓN (MODIFICADA PARA SIDEBAR) ---
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
     }
 
     function irA(vistaId, nombreVista, btnId) {
@@ -429,8 +582,11 @@
     }
 
     function navegar(vistaId, nombreVista, btnElement) {
-        document.getElementById('navMenu').classList.remove('show'); 
-        document.getElementById('menu-title').innerHTML = "☰ " + nombreVista;
+        // Cerrar menú si estamos en móvil
+        if(window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('active');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
+        }
 
         // Botones activos
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -449,15 +605,14 @@
                 setTimeout(() => {
                     vistaNueva.classList.add('visible');
                 }, 50);
-                
                 if(vistaId !== 'view-dashboard') actualizarTodo();
-            }, 500); 
+            }, 400); 
         } else {
             vistaNueva.classList.add('display-block', 'visible');
         }
     }
 
-    // --- 3. USUARIOS Y ALERTA ---
+    // --- 5. USUARIOS Y LOGIN ---
     function initUsuarios() {
         if(!localStorage.getItem("alp13_users")) {
             localStorage.setItem("alp13_users", JSON.stringify([{user:"admin", pass:"1234"}]));
@@ -467,13 +622,10 @@
     function toggleRegistro() {
         const login = document.getElementById("form-login");
         const reg = document.getElementById("form-register");
-        
         if (login.style.display === "none") {
-            login.style.display = "block";
-            reg.style.display = "none";
+            login.style.display = "block"; reg.style.display = "none";
         } else {
-            login.style.display = "none";
-            reg.style.display = "block";
+            login.style.display = "none"; reg.style.display = "block";
         }
         document.getElementById("error_msg").style.display = "none";
         document.getElementById("reg_msg").style.display = "none";
@@ -505,8 +657,14 @@
             alert(u.toUpperCase() + " BETICO Y ROBERT DEVELOPER TE DAN LA BIENVENIDA");
 
             document.getElementById("login-view").style.display = "none";
-            document.getElementById("app-view").style.display = "block";
-            // Asegurarse de que se muestre el Dashboard al inicio
+            document.body.classList.remove('not-logged-in');
+            document.body.classList.add('logged-in');
+            
+            // Mostrar App
+            const app = document.getElementById("app-view");
+            app.style.display = "flex"; 
+            
+            checkMobileDisplay();
             navegar('view-dashboard', 'Inicio', document.getElementById('btn-dashboard'));
             actualizarTodo();
         } else {
@@ -519,7 +677,7 @@
         location.reload(); 
     }
 
-    // --- 4. SISTEMA (CRUD) ---
+    // --- 6. SISTEMA CRUD ---
     let productos = JSON.parse(localStorage.getItem("alp13_productos")) || [];
     let movimientos = JSON.parse(localStorage.getItem("alp13_mov")) || [];
 
@@ -658,11 +816,9 @@
         const s1 = document.getElementById("sel_movProd");
         const s2 = document.getElementById("sel_movProd_input");
         const v1 = s1.value, v2 = s2.value;
-
         let ops = productos.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('');
         s1.innerHTML = `<option value="TODOS">Todo</option>` + ops;
         s2.innerHTML = ops;
-        
         if(v1) s1.value = v1;
         if(v2) s2.value = v2;
     }
