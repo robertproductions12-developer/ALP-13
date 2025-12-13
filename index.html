@@ -13,31 +13,53 @@
             color: #e0e0e0; 
             background-color: #000;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* FONDO ANIMADO */
+        /* FONDO GRADIENTE */
         body {
-            background: linear-gradient(-45deg, #000000, #1a0b2e, #320b46, #000000);
-            background-size: 400% 400%;
-            animation: gradientBG 12s ease infinite;
-        }
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background: radial-gradient(circle at center, #1a0b2e 0%, #000000 100%);
         }
 
-        .bg-number {
-            position: fixed; color: rgba(187, 134, 252, 0.15);
-            font-family: monospace; font-weight: bold;
-            user-select: none; z-index: -1; animation: floatUp linear infinite;
+        /* --- ANIMACIÓN DE FONDO (Corrección de Capas) --- */
+        #bg-container {
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; 
+            z-index: 0; /* Capa 0: Sobre el fondo negro, bajo el contenido */
+            pointer-events: none; /* Permite dar click a través de los números */
         }
+
+        .floating-graphic {
+            position: absolute;
+            color: rgba(187, 134, 252, 0.25); /* Color lila semitransparente */
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            user-select: none;
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.5);
+            animation: floatUp linear infinite;
+            bottom: -100px;
+        }
+
         @keyframes floatUp {
-            0% { transform: translateY(110vh); opacity: 0; }
-            100% { transform: translateY(-10vh); opacity: 0; }
+            0% { 
+                transform: translateY(100vh) rotate(0deg) scale(0.8); 
+                opacity: 0; 
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-20vh) rotate(360deg) scale(1.2); 
+                opacity: 0; 
+            }
         }
 
-        /* --- CONTENEDORES RESPONSIVE --- */
+        /* --- CONTENEDORES RESPONSIVE (Capa Superior) --- */
+        .login-box, .seccion, .nav-container, .header-bar {
+            position: relative;
+            z-index: 10; /* Capa 10: Asegura que el contenido esté sobre la animación */
+        }
+
         .login-box, .seccion {
             background: rgba(20, 20, 20, 0.85); 
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -46,6 +68,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             padding: 20px; margin-bottom: 20px;
             width: 100%; box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         #app-view { display: none; padding: 10px; width: 100%; max-width: 800px; margin: 0 auto; box-sizing: border-box; }
@@ -56,18 +79,16 @@
             font-size: 1.2rem;
         }
 
-        /* --- MENÚ DESPLEGABLE RESPONSIVE --- */
-        .nav-container {
-            position: relative; margin-bottom: 20px; z-index: 1000;
-        }
+        /* --- MENÚ DESPLEGABLE --- */
         .nav-toggle {
             background: linear-gradient(90deg, #4a148c, #7b1fa2);
             color: white; padding: 15px; border-radius: 8px;
             cursor: pointer; font-weight: bold; display: flex;
             justify-content: space-between; align-items: center;
             border: 1px solid #9c27b0; user-select: none;
+            box-shadow: 0 0 10px rgba(123, 31, 162, 0.5);
         }
-        .nav-toggle:hover { background: linear-gradient(90deg, #6a0dad, #8e24aa); }
+        .nav-toggle:hover { background: linear-gradient(90deg, #6a0dad, #8e24aa); transform: scale(1.01); }
         
         .nav-menu {
             display: none; background: rgba(30, 10, 50, 0.95);
@@ -75,73 +96,92 @@
             border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
             overflow: hidden; position: absolute; width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            z-index: 100; /* Menú por encima de todo */
         }
         .nav-menu.show { display: block; animation: slideDown 0.3s ease-out; }
         
         .nav-btn {
             padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);
-            color: #d1b3ff; cursor: pointer; transition: 0.2s;
+            color: #d1b3ff; cursor: pointer; transition: 0.3s;
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 20px; }
-        .nav-btn.active { color: #00e676; font-weight: bold; border-left: 4px solid #00e676; }
+        .nav-btn:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 25px; }
+        .nav-btn.active { color: #00e676; font-weight: bold; border-left: 4px solid #00e676; background: rgba(0, 230, 118, 0.1); }
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Contenido Tabs */
-        .tab-content { display: none; animation: fadeIn 0.4s; }
-        .tab-content.active-view { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* --- TRANSICIONES FLUIDAS ENTRE VISTAS --- */
+        .tab-content { 
+            display: none; 
+            opacity: 0; 
+            transform: translateY(20px); 
+            transition: opacity 0.5s ease, transform 0.5s ease; 
+        }
+        
+        /* Clase para mostrar elemento */
+        .tab-content.display-block { display: block; }
+        
+        /* Clase para activar opacidad */
+        .tab-content.visible { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
 
-        /* --- FORMULARIOS E INPUTS --- */
+        /* --- FORMULARIOS --- */
         input, select {
             width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box;
             border-radius: 8px; font-size: 16px;
             background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4a148c; color: #fff; outline: none;
+            transition: border-color 0.3s;
         }
-        input:focus, select:focus { border-color: #d500f9; }
+        input:focus, select:focus { border-color: #d500f9; box-shadow: 0 0 8px rgba(213, 0, 249, 0.3); }
 
-        /* --- BOTONES --- */
         button {
             width: 100%; padding: 14px; margin-top: 10px;
             border: none; border-radius: 8px; font-weight: bold; font-size: 16px; 
             cursor: pointer; color: white;
             background: linear-gradient(90deg, #6a0dad, #9c27b0);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        button:active { transform: scale(0.98); }
+        button:hover { box-shadow: 0 0 15px rgba(156, 39, 176, 0.6); }
+        button:active { transform: scale(0.96); }
         
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .btn-logout { width: auto; background: #333; padding: 8px 12px; font-size: 0.8rem; margin: 0; }
         
-        /* Botones Acción (Responsive Grid) */
         .action-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         .btn-action { margin: 0; font-size: 0.85rem; padding: 10px; }
-        .btn-full { grid-column: span 2; } /* Botón imprimir ocupa todo el ancho */
+        .btn-full { grid-column: span 2; } 
         
         .btn-excel { background: #2e7d32; }
         .btn-email { background: #1565c0; }
         .btn-print { background: #ef6c00; }
 
-        /* --- TABLAS RESPONSIVE --- */
-        .tabla-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid #444; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; /* Asegura scroll horizontal en móviles */ }
-        th, td { padding: 10px; text-align: left; font-size: 0.9em; border-bottom: 1px solid #333; }
+        /* --- TABLAS --- */
+        .tabla-container { overflow-x: auto; border-radius: 8px; border: 1px solid #444; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th, td { padding: 10px; text-align: left; font-size: 0.9em; border-bottom: 1px solid #333; transition: background 0.2s; }
         th { background: #1a0b2e; color: #ea80fc; position: sticky; top: 0; }
-        .prod-img { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; }
+        tr:hover td { background: rgba(255, 255, 255, 0.05); }
+        .prod-img { width: 40px; height: 40px; object-fit: cover; border-radius: 50%; border: 1px solid #d1b3ff; }
 
         /* --- LOGIN --- */
         #login-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
             padding: 20px; box-sizing: border-box;
+            background: rgba(0,0,0,0.6);
+            transition: opacity 0.5s ease;
         }
-        .login-inner { max-width: 350px; }
+        .login-inner { max-width: 350px; animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        /* --- SLIDER RESPONSIVE --- */
+        @keyframes popIn { from{ transform: scale(0.8); opacity: 0; } to{ transform: scale(1); opacity: 1; } }
+
+        /* --- SLIDER --- */
         .slider-wrapper {
             width: 100%; border-radius: 12px; overflow: hidden;
             box-shadow: 0 0 15px rgba(106, 13, 173, 0.5); background: #000;
-            aspect-ratio: 16/9; /* Mantiene proporción en cualquier pantalla */
+            aspect-ratio: 16/9; 
+            position: relative; z-index: 10;
         }
         .slider-track { display: flex; width: 400%; animation: slideAnimation 16s infinite; height: 100%; }
         .slide-img { width: 100%; height: 100%; object-fit: cover; }
@@ -154,15 +194,15 @@
             100% { margin-left: 0; }
         }
 
-        .footer-credit { text-align: center; font-size: 0.7em; color: #777; margin-top: 20px; width: 100%; }
+        .footer-credit { text-align: center; font-size: 0.7em; color: #777; margin-top: 20px; width: 100%; position: relative; z-index: 10; }
 
         /* --- IMPRESIÓN --- */
         @media print {
-            .no-print, .nav-container, .header-bar button, .bg-number { display: none !important; }
+            .no-print, .nav-container, .header-bar button, #bg-container { display: none !important; }
             body, .seccion { background: white !important; color: black !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
             #app-view { display: block !important; width: 100% !important; max-width: none !important; }
             .tab-content { display: none; }
-            .tab-content.active-view { display: block; }
+            .tab-content.display-block { display: block; opacity: 1; transform: none; }
             table { width: 100%; border: 1px solid black; }
             th, td { border: 1px solid black; color: black; }
             #titulo-impresion { display: block !important; text-align: center; margin-bottom: 20px; }
@@ -172,8 +212,8 @@
 </head>
 <body>
 
-    <!-- FONDO FLOTANTE -->
-    <div id="bg-numbers"></div>
+    <!-- FONDO ANIMADO (AQUÍ ESTARÁN LOS NÚMEROS) -->
+    <div id="bg-container"></div>
 
     <!-- 1. LOGIN -->
     <div id="login-view">
@@ -185,7 +225,7 @@
                 <input type="password" id="log_pass" placeholder="Contraseña">
                 <button onclick="iniciarSesion()">INGRESAR</button>
                 <button class="btn-link" style="background:none; border:none; color:#d1b3ff; text-decoration:underline; font-size:0.9em; margin-top:10px;" onclick="toggleRegistro()">Crear cuenta</button>
-                <p id="error_msg" style="color:red; display:none; text-align:center;">Datos incorrectos</p>
+                <p id="error_msg" style="color:red; display:none; text-align:center; margin-top: 10px;">Datos incorrectos</p>
             </div>
 
             <div id="form-register" style="display:none;">
@@ -194,7 +234,7 @@
                 <input type="password" id="reg_pass" placeholder="Nueva Contraseña">
                 <button onclick="registrarUsuario()" style="background: linear-gradient(90deg, #00c853, #64dd17);">REGISTRARSE</button>
                 <button class="btn-link" style="background:none; border:none; color:#d1b3ff; margin-top:10px;" onclick="toggleRegistro()">Volver</button>
-                <p id="reg_msg" style="color:#00e676; display:none; text-align:center;">Usuario creado</p>
+                <p id="reg_msg" style="color:#00e676; display:none; text-align:center; margin-top: 10px;">Usuario creado</p>
             </div>
         </div>
         <div class="footer-credit" style="position:fixed; bottom:10px;">DEV - ROBERT PARACO 2025</div>
@@ -214,14 +254,14 @@
                 <span>▼</span>
             </div>
             <div class="nav-menu" id="navMenu">
-                <div class="nav-btn active" onclick="navegar('view-inventario', 'Inventario')">📋 Inventario</div>
-                <div class="nav-btn" onclick="navegar('view-movimientos', 'Movimientos')">🔄 Registrar Movimiento</div>
-                <div class="nav-btn" onclick="navegar('view-reportes', 'Reportes')">📊 Reportes e Historial</div>
+                <div class="nav-btn active" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario</div>
+                <div class="nav-btn" id="btn-movimientos" onclick="navegar('view-movimientos', 'Movimientos', this)">🔄 Registrar Movimiento</div>
+                <div class="nav-btn" id="btn-reportes" onclick="navegar('view-reportes', 'Reportes', this)">📊 Reportes e Historial</div>
             </div>
         </div>
 
         <!-- VISTA 1: INVENTARIO -->
-        <div id="view-inventario" class="tab-content active-view">
+        <div id="view-inventario" class="tab-content display-block visible">
             <div class="seccion no-print">
                 <h3>+ Nuevo Producto</h3>
                 <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
@@ -318,30 +358,80 @@
     </div>
 
 <script>
-    // --- LÓGICA DEL MENÚ DESPLEGABLE ---
-    function toggleMenu() {
-        const menu = document.getElementById('navMenu');
-        menu.classList.toggle('show');
+    // --- 1. SCRIPT DE ANIMACIÓN DE FONDO ---
+    window.addEventListener('DOMContentLoaded', () => {
+        initUsuarios();
+        crearFondoAnimado();
+    });
+
+    function crearFondoAnimado() {
+        const bg = document.getElementById("bg-container");
+        const chars = ['0', '1', '10', '01', '∑', 'π', '∫', '∆', 'Ω', 'β', 'λ', '{ }', '</>', '0xFF'];
+        const numElementos = 35; // Cantidad de números/símbolos
+
+        for(let i=0; i<numElementos; i++) {
+            let el = document.createElement('div');
+            el.className = 'floating-graphic';
+            
+            // Contenido aleatorio
+            el.innerText = chars[Math.floor(Math.random() * chars.length)];
+            
+            // Posición aleatoria
+            el.style.left = Math.random() * 100 + 'vw';
+            
+            // Tamaño aleatorio
+            el.style.fontSize = (Math.random() * 35 + 15) + 'px'; 
+            
+            // Velocidad aleatoria
+            el.style.animationDuration = (Math.random() * 12 + 6) + 's'; 
+            
+            // Retraso para que no salgan todos juntos
+            el.style.animationDelay = (Math.random() * 10) + 's';
+
+            bg.appendChild(el);
+        }
     }
 
-    function navegar(vistaId, nombreVista) {
-        // Cerrar menú
-        document.getElementById('navMenu').classList.remove('show');
-        
-        // Cambiar título del menú
+    // --- 2. LÓGICA DE NAVEGACIÓN FLUIDA ---
+    function toggleMenu() {
+        document.getElementById('navMenu').classList.toggle('show');
+    }
+
+    function navegar(vistaId, nombreVista, btnElement) {
+        document.getElementById('navMenu').classList.remove('show'); 
         document.getElementById('menu-title').innerHTML = "☰ " + nombreVista;
 
-        // Ocultar vistas
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-view'));
-        
-        // Mostrar vista elegida
-        document.getElementById(vistaId).classList.add('active-view');
-        
-        // Actualizar datos si es necesario
-        if(vistaId !== 'view-inventario') actualizarTodo();
+        // Botones activos
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(btnElement) btnElement.classList.add('active');
+
+        // ANIMACIÓN ENTRE PESTAÑAS
+        const vistaActual = document.querySelector('.tab-content.visible');
+        const vistaNueva = document.getElementById(vistaId);
+
+        if (vistaActual === vistaNueva) return;
+
+        // 1. Ocultar la actual
+        if(vistaActual) {
+            vistaActual.classList.remove('visible');
+            setTimeout(() => {
+                vistaActual.classList.remove('display-block');
+                
+                // 2. Mostrar la nueva (después del delay)
+                vistaNueva.classList.add('display-block');
+                // Pequeña pausa para permitir que el DOM renderice el display:block antes de la opacidad
+                setTimeout(() => {
+                    vistaNueva.classList.add('visible');
+                }, 50);
+                
+                if(vistaId !== 'view-inventario') actualizarTodo();
+            }, 500); // 500ms debe coincidir con el CSS transition
+        } else {
+            vistaNueva.classList.add('display-block', 'visible');
+        }
     }
 
-    // --- LÓGICA DE USUARIOS ---
+    // --- 3. USUARIOS Y ALERTA ---
     function initUsuarios() {
         if(!localStorage.getItem("alp13_users")) {
             localStorage.setItem("alp13_users", JSON.stringify([{user:"admin", pass:"1234"}]));
@@ -351,8 +441,14 @@
     function toggleRegistro() {
         const login = document.getElementById("form-login");
         const reg = document.getElementById("form-register");
-        login.style.display = (login.style.display === "none") ? "block" : "none";
-        reg.style.display = (reg.style.display === "block") ? "none" : "block";
+        
+        if (login.style.display === "none") {
+            login.style.display = "block";
+            reg.style.display = "none";
+        } else {
+            login.style.display = "none";
+            reg.style.display = "block";
+        }
         document.getElementById("error_msg").style.display = "none";
         document.getElementById("reg_msg").style.display = "none";
     }
@@ -380,6 +476,9 @@
         let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
         
         if(users.some(x => x.user === u && x.pass === p)) {
+            // ---> ALERTA EXACTA SOLICITADA <---
+            alert(u.toUpperCase() + " BETICO Y ROBERT DEVELOPER TE DAN LA BIENVENIDA");
+
             document.getElementById("login-view").style.display = "none";
             document.getElementById("app-view").style.display = "block";
             actualizarTodo();
@@ -393,7 +492,7 @@
         location.reload(); 
     }
 
-    // --- LÓGICA DEL SISTEMA ---
+    // --- 4. SISTEMA (CRUD) ---
     let productos = JSON.parse(localStorage.getItem("alp13_productos")) || [];
     let movimientos = JSON.parse(localStorage.getItem("alp13_mov")) || [];
 
@@ -450,7 +549,6 @@
             productos[idx].saldo -= cant;
         }
 
-        // Actualizar QR
         let p = productos[idx];
         const dataQR = `ID:${p.codigo}|Pr:${p.nombre}|Ub:${p.ubicacion}|St:${p.saldo}`;
         p.qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dataQR)}`;
@@ -546,7 +644,6 @@
         cargarSelects(); mostrar(); mostrarMovPorProducto();
     }
 
-    // --- UTILS REPORTES ---
     function getSelected() {
         const chks = document.querySelectorAll('.chk-print:checked');
         let rows = chks.length ? Array.from(chks).map(c=>c.closest('tr')) : Array.from(document.querySelectorAll('#tablaMovProd tr'));
@@ -577,23 +674,6 @@
         window.print();
         if(hasCheck) chks.forEach(c => c.closest('tr').classList.remove('no-print'));
     }
-
-    // --- INICIO ---
-    window.onload = () => {
-        initUsuarios();
-        
-        // Generar fondo
-        const bg = document.getElementById("bg-numbers");
-        for(let i=0; i<20; i++) {
-            let d = document.createElement('div');
-            d.className = 'bg-number';
-            d.innerText = Math.floor(Math.random()*10);
-            d.style.left = Math.random()*100+'vw';
-            d.style.fontSize = (Math.random()*30+10)+'px';
-            d.style.animationDuration = (Math.random()*5+5)+'s';
-            bg.appendChild(d);
-        }
-    };
 </script>
 </body>
 </html>
