@@ -21,18 +21,18 @@
             background: radial-gradient(circle at center, #1a0b2e 0%, #000000 100%);
         }
 
-        /* --- ANIMACIÓN DE FONDO (Corrección de Capas) --- */
+        /* --- ANIMACIÓN DE FONDO --- */
         #bg-container {
             position: fixed; 
             top: 0; left: 0; width: 100%; height: 100%;
             overflow: hidden; 
-            z-index: 0; /* Capa 0: Sobre el fondo negro, bajo el contenido */
-            pointer-events: none; /* Permite dar click a través de los números */
+            z-index: 0; 
+            pointer-events: none;
         }
 
         .floating-graphic {
             position: absolute;
-            color: rgba(187, 134, 252, 0.25); /* Color lila semitransparente */
+            color: rgba(187, 134, 252, 0.25);
             font-family: 'Courier New', monospace;
             font-weight: bold;
             user-select: none;
@@ -42,22 +42,16 @@
         }
 
         @keyframes floatUp {
-            0% { 
-                transform: translateY(100vh) rotate(0deg) scale(0.8); 
-                opacity: 0; 
-            }
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { 
-                transform: translateY(-20vh) rotate(360deg) scale(1.2); 
-                opacity: 0; 
-            }
+            100% { transform: translateY(-20vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
-        /* --- CONTENEDORES RESPONSIVE (Capa Superior) --- */
-        .login-box, .seccion, .nav-container, .header-bar {
+        /* --- CONTENEDORES RESPONSIVE --- */
+        .login-box, .seccion, .nav-container, .header-bar, .dashboard-container {
             position: relative;
-            z-index: 10; /* Capa 10: Asegura que el contenido esté sobre la animación */
+            z-index: 10; 
         }
 
         .login-box, .seccion {
@@ -79,6 +73,43 @@
             font-size: 1.2rem;
         }
 
+        /* --- DASHBOARD (NUEVO) --- */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .dash-card {
+            background: linear-gradient(135deg, rgba(74, 20, 140, 0.6), rgba(0,0,0,0.8));
+            border: 1px solid #7b1fa2;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 150px;
+        }
+        .dash-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(123, 31, 162, 0.4);
+            border-color: #d500f9;
+        }
+        .dash-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .dash-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
         /* --- MENÚ DESPLEGABLE --- */
         .nav-toggle {
             background: linear-gradient(90deg, #4a148c, #7b1fa2);
@@ -96,7 +127,7 @@
             border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
             overflow: hidden; position: absolute; width: 100%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            z-index: 100; /* Menú por encima de todo */
+            z-index: 100; 
         }
         .nav-menu.show { display: block; animation: slideDown 0.3s ease-out; }
         
@@ -109,22 +140,13 @@
 
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- TRANSICIONES FLUIDAS ENTRE VISTAS --- */
+        /* --- TRANSICIONES FLUIDAS --- */
         .tab-content { 
-            display: none; 
-            opacity: 0; 
-            transform: translateY(20px); 
+            display: none; opacity: 0; transform: translateY(20px); 
             transition: opacity 0.5s ease, transform 0.5s ease; 
         }
-        
-        /* Clase para mostrar elemento */
         .tab-content.display-block { display: block; }
-        
-        /* Clase para activar opacidad */
-        .tab-content.visible { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
+        .tab-content.visible { opacity: 1; transform: translateY(0); }
 
         /* --- FORMULARIOS --- */
         input, select {
@@ -198,7 +220,7 @@
 
         /* --- IMPRESIÓN --- */
         @media print {
-            .no-print, .nav-container, .header-bar button, #bg-container { display: none !important; }
+            .no-print, .nav-container, .header-bar button, #bg-container, #view-dashboard { display: none !important; }
             body, .seccion { background: white !important; color: black !important; box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; }
             #app-view { display: block !important; width: 100% !important; max-width: none !important; }
             .tab-content { display: none; }
@@ -212,7 +234,7 @@
 </head>
 <body>
 
-    <!-- FONDO ANIMADO (AQUÍ ESTARÁN LOS NÚMEROS) -->
+    <!-- FONDO ANIMADO -->
     <div id="bg-container"></div>
 
     <!-- 1. LOGIN -->
@@ -250,18 +272,40 @@
         <!-- MENÚ DESPLEGABLE -->
         <div class="nav-container no-print">
             <div class="nav-toggle" onclick="toggleMenu()">
-                <span id="menu-title">☰ MENÚ DE OPCIONES</span>
+                <span id="menu-title">☰ INICIO</span>
                 <span>▼</span>
             </div>
             <div class="nav-menu" id="navMenu">
-                <div class="nav-btn active" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario</div>
+                <div class="nav-btn" id="btn-dashboard" onclick="navegar('view-dashboard', 'Inicio', this)">🏠 Inicio</div>
+                <div class="nav-btn" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario</div>
                 <div class="nav-btn" id="btn-movimientos" onclick="navegar('view-movimientos', 'Movimientos', this)">🔄 Registrar Movimiento</div>
                 <div class="nav-btn" id="btn-reportes" onclick="navegar('view-reportes', 'Reportes', this)">📊 Reportes e Historial</div>
             </div>
         </div>
 
+        <!-- VISTA 0: DASHBOARD (NUEVO) -->
+        <div id="view-dashboard" class="tab-content display-block visible">
+            <div class="dashboard-container">
+                <h3 style="text-align:center; border:none; margin-bottom:20px;">Selecciona una opción</h3>
+                <div class="dash-grid">
+                    <div class="dash-card" onclick="irA('view-inventario', 'Inventario', 'btn-inventario')">
+                        <span class="dash-icon">📋</span>
+                        <div class="dash-title">Inventario</div>
+                    </div>
+                    <div class="dash-card" onclick="irA('view-movimientos', 'Movimientos', 'btn-movimientos')">
+                        <span class="dash-icon">🔄</span>
+                        <div class="dash-title">Movimientos</div>
+                    </div>
+                    <div class="dash-card" onclick="irA('view-reportes', 'Reportes', 'btn-reportes')">
+                        <span class="dash-icon">📊</span>
+                        <div class="dash-title">Reportes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- VISTA 1: INVENTARIO -->
-        <div id="view-inventario" class="tab-content display-block visible">
+        <div id="view-inventario" class="tab-content">
             <div class="seccion no-print">
                 <h3>+ Nuevo Producto</h3>
                 <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
@@ -276,7 +320,6 @@
             <div class="seccion">
                 <h3>🔍 Buscar Producto</h3>
                 <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Escribe nombre o código...">
-                
                 <div class="tabla-container">
                     <table>
                         <thead>
@@ -294,7 +337,6 @@
                 <h3>Registrar E/S</h3>
                 <label style="color:#d1b3ff; font-size:0.9em;">Producto:</label>
                 <select id="sel_movProd_input"></select>
-                
                 <div style="display:flex; gap:10px;">
                     <select id="sel_tipo" style="flex:1;">
                         <option value="ENTRADA">🟢 Entrada</option>
@@ -302,7 +344,6 @@
                     </select>
                     <input type="number" id="inp_cantidad" placeholder="Cant." style="flex:1;">
                 </div>
-                
                 <input type="text" id="inp_referencia" placeholder="Referencia / Nota">
                 <button onclick="agregarMovimiento()">CONFIRMAR</button>
             </div>
@@ -313,17 +354,14 @@
             <div class="seccion">
                 <h3 class="no-print">Historial</h3>
                 <h2 id="titulo-impresion">Reporte de Inventario</h2>
-                
                 <div class="no-print" style="margin-bottom:15px;">
                     <select id="sel_movProd" onchange="mostrarMovPorProducto()"></select>
                 </div>
-
                 <div class="action-buttons no-print">
                     <button class="btn-action btn-excel" onclick="exportarExcel()">Excel</button>
                     <button class="btn-action btn-email" onclick="enviarCorreo()">Email</button>
                     <button class="btn-action btn-print btn-full" onclick="imprimirSeleccion()">Imprimir Reporte</button>
                 </div>
-
                 <div class="tabla-container">
                     <table>
                         <thead>
@@ -367,27 +405,16 @@
     function crearFondoAnimado() {
         const bg = document.getElementById("bg-container");
         const chars = ['0', '1', '10', '01', '∑', 'π', '∫', '∆', 'Ω', 'β', 'λ', '{ }', '</>', '0xFF'];
-        const numElementos = 35; // Cantidad de números/símbolos
+        const numElementos = 35; 
 
         for(let i=0; i<numElementos; i++) {
             let el = document.createElement('div');
             el.className = 'floating-graphic';
-            
-            // Contenido aleatorio
             el.innerText = chars[Math.floor(Math.random() * chars.length)];
-            
-            // Posición aleatoria
             el.style.left = Math.random() * 100 + 'vw';
-            
-            // Tamaño aleatorio
             el.style.fontSize = (Math.random() * 35 + 15) + 'px'; 
-            
-            // Velocidad aleatoria
             el.style.animationDuration = (Math.random() * 12 + 6) + 's'; 
-            
-            // Retraso para que no salgan todos juntos
             el.style.animationDelay = (Math.random() * 10) + 's';
-
             bg.appendChild(el);
         }
     }
@@ -395,6 +422,10 @@
     // --- 2. LÓGICA DE NAVEGACIÓN FLUIDA ---
     function toggleMenu() {
         document.getElementById('navMenu').classList.toggle('show');
+    }
+
+    function irA(vistaId, nombreVista, btnId) {
+        navegar(vistaId, nombreVista, document.getElementById(btnId));
     }
 
     function navegar(vistaId, nombreVista, btnElement) {
@@ -405,27 +436,22 @@
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
 
-        // ANIMACIÓN ENTRE PESTAÑAS
         const vistaActual = document.querySelector('.tab-content.visible');
         const vistaNueva = document.getElementById(vistaId);
 
         if (vistaActual === vistaNueva) return;
 
-        // 1. Ocultar la actual
         if(vistaActual) {
             vistaActual.classList.remove('visible');
             setTimeout(() => {
                 vistaActual.classList.remove('display-block');
-                
-                // 2. Mostrar la nueva (después del delay)
                 vistaNueva.classList.add('display-block');
-                // Pequeña pausa para permitir que el DOM renderice el display:block antes de la opacidad
                 setTimeout(() => {
                     vistaNueva.classList.add('visible');
                 }, 50);
                 
-                if(vistaId !== 'view-inventario') actualizarTodo();
-            }, 500); // 500ms debe coincidir con el CSS transition
+                if(vistaId !== 'view-dashboard') actualizarTodo();
+            }, 500); 
         } else {
             vistaNueva.classList.add('display-block', 'visible');
         }
@@ -476,11 +502,12 @@
         let users = JSON.parse(localStorage.getItem("alp13_users")) || [];
         
         if(users.some(x => x.user === u && x.pass === p)) {
-            // ---> ALERTA EXACTA SOLICITADA <---
             alert(u.toUpperCase() + " BETICO Y ROBERT DEVELOPER TE DAN LA BIENVENIDA");
 
             document.getElementById("login-view").style.display = "none";
             document.getElementById("app-view").style.display = "block";
+            // Asegurarse de que se muestre el Dashboard al inicio
+            navegar('view-dashboard', 'Inicio', document.getElementById('btn-dashboard'));
             actualizarTodo();
         } else {
             document.getElementById("error_msg").style.display = "block";
