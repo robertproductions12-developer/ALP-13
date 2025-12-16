@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ALP 13 Inventario Pro - Online</title>
     
-    <!-- FIREBASE SDK (Versión Compat para HTML simple) -->
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* --- ESTILOS GENERALES (MISMOS QUE TU CÓDIGO ORIGINAL) --- */
+        /* --- ESTILOS GENERALES --- */
         body, html { 
             margin: 0; padding: 0; height: 100%; 
             font-family: 'Segoe UI', sans-serif; 
@@ -31,18 +31,28 @@
         h2, h3 { color: #d1b3ff; border-bottom: 1px solid #4a148c; padding-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-size: 1.2rem; }
         
         /* DASHBOARD 3D */
-        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 20px; padding: 10px; perspective: 1000px; }
-        .dash-card { background: linear-gradient(135deg, rgba(74, 20, 140, 0.8), rgba(10, 10, 10, 0.95)); border: 1px solid #7b1fa2; border-radius: 15px; padding: 25px; text-align: center; cursor: pointer; height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg); transition: transform 0.1s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
-        .dash-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-        .dash-card:hover::before { opacity: 1; }
+        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; padding: 10px; perspective: 1000px; }
+        .dash-card { background: linear-gradient(135deg, rgba(74, 20, 140, 0.8), rgba(10, 10, 10, 0.95)); border: 1px solid #7b1fa2; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg); transition: transform 0.1s ease, box-shadow 0.3s ease; position: relative; overflow: hidden; }
         .dash-card:hover { border-color: #d500f9; box-shadow: 0 20px 40px rgba(156, 39, 176, 0.4); }
-        .dash-icon { font-size: 3.5rem; margin-bottom: 15px; text-shadow: 0 0 15px rgba(213, 0, 249, 0.6); transform: translateZ(30px); transition: transform 0.3s; }
-        .dash-title { font-size: 1.3rem; font-weight: bold; color: #fff; transform: translateZ(20px); transition: color 0.3s; }
+        .dash-icon { font-size: 3rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(213, 0, 249, 0.6); transform: translateZ(30px); transition: transform 0.3s; }
+        .dash-title { font-size: 1.1rem; font-weight: bold; color: #fff; transform: translateZ(20px); }
         .dash-card:active { transform: scale(0.95) !important; }
+
+        /* GALERIA ESTILOS */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .gallery-card { background: rgba(0,0,0,0.6); border: 1px solid #4a148c; border-radius: 10px; overflow: hidden; transition: 0.3s; }
+        .gallery-card:hover { border-color: #00e676; transform: translateY(-5px); }
+        .gallery-main-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #444; cursor: pointer; }
+        .gallery-thumbs { display: flex; height: 60px; background: #111; }
+        .gallery-thumb { flex: 1; object-fit: cover; border-right: 1px solid #333; cursor: pointer; opacity: 0.7; transition: 0.2s; }
+        .gallery-thumb:hover { opacity: 1; border: 1px solid #fff; }
+        .gallery-info { padding: 15px; }
+        .gallery-info h4 { margin: 0 0 5px 0; color: #fff; font-size: 1.2em; }
+        .gallery-info p { margin: 3px 0; font-size: 0.9em; color: #aaa; }
+        .gallery-label { color: #d1b3ff; font-weight: bold; }
 
         /* NAV */
         .nav-toggle { background: linear-gradient(90deg, #4a148c, #7b1fa2); color: white; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border: 1px solid #9c27b0; user-select: none; box-shadow: 0 0 10px rgba(123, 31, 162, 0.5); }
-        .nav-toggle:hover { background: linear-gradient(90deg, #6a0dad, #8e24aa); transform: scale(1.01); }
         .nav-menu { display: none; background: rgba(30, 10, 50, 0.95); border: 1px solid #6a0dad; border-top: none; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; overflow: hidden; position: absolute; width: 100%; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 100; }
         .nav-menu.show { display: block; animation: slideDown 0.3s ease-out; }
         .nav-btn { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); color: #d1b3ff; cursor: pointer; transition: 0.3s; }
@@ -55,6 +65,7 @@
         .tab-content.display-block { display: block; }
         .tab-content.visible { opacity: 1; transform: translateY(0); }
         input, select { width: 100%; padding: 12px; margin: 8px 0; box-sizing: border-box; border-radius: 8px; font-size: 16px; background-color: rgba(0, 0, 0, 0.5); border: 1px solid #4a148c; color: #fff; outline: none; transition: border-color 0.3s; }
+        input[type="file"] { font-size: 12px; }
         input:focus, select:focus { border-color: #d500f9; box-shadow: 0 0 8px rgba(213, 0, 249, 0.3); }
         button { width: 100%; padding: 14px; margin-top: 10px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; color: white; background: linear-gradient(90deg, #6a0dad, #9c27b0); transition: transform 0.2s, box-shadow 0.2s; }
         button:hover { box-shadow: 0 0 15px rgba(156, 39, 176, 0.6); }
@@ -107,17 +118,14 @@
     <div id="login-view">
         <div class="login-box login-inner">
             <h2 style="border:none; text-align:center; font-size: 2em; text-shadow: 0 0 10px #aa00ff; margin: 0 0 20px 0;">ALP 13</h2>
-            
             <div id="form-login">
                 <input type="text" id="log_user" placeholder="Usuario">
                 <input type="password" id="log_pass" placeholder="Contraseña">
                 <button onclick="iniciarSesion()">INGRESAR</button>
                 <button class="btn-link" style="background:none; border:none; color:#d1b3ff; text-decoration:underline; font-size:0.9em; margin-top:10px;" onclick="toggleRegistro()">Crear cuenta</button>
                 <p id="error_msg" style="color:red; display:none; text-align:center; margin-top: 10px;">Datos incorrectos</p>
-                <!-- Indicador de carga -->
-                <p id="loading_msg" style="color:#00e676; display:none; text-align:center;">Conectando al servidor...</p>
+                <p id="loading_msg" style="color:#00e676; display:none; text-align:center;">Conectando...</p>
             </div>
-
             <div id="form-register" style="display:none;">
                 <h3 style="border:none; color:white; text-align:center;">Registro</h3>
                 <input type="text" id="reg_user" placeholder="Nuevo Usuario">
@@ -144,7 +152,8 @@
             </div>
             <div class="nav-menu" id="navMenu">
                 <div class="nav-btn" id="btn-dashboard" onclick="navegar('view-dashboard', 'Inicio', this)">🏠 Inicio</div>
-                <div class="nav-btn" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario</div>
+                <div class="nav-btn" id="btn-galeria" onclick="navegar('view-galeria', 'Galería', this)">📷 Galería</div>
+                <div class="nav-btn" id="btn-inventario" onclick="navegar('view-inventario', 'Inventario', this)">📋 Inventario (Tabla)</div>
                 <div class="nav-btn" id="btn-movimientos" onclick="navegar('view-movimientos', 'Movimientos', this)">🔄 Registrar Movimiento</div>
                 <div class="nav-btn" id="btn-reportes" onclick="navegar('view-reportes', 'Reportes', this)">📊 Reportes e Historial</div>
             </div>
@@ -154,6 +163,10 @@
             <div class="dashboard-container">
                 <h3 style="text-align:center; border:none; margin-bottom:20px;">Selecciona una opción</h3>
                 <div class="dash-grid">
+                    <div class="dash-card" onclick="irA('view-galeria', 'Galería', 'btn-galeria')">
+                        <span class="dash-icon">📷</span>
+                        <div class="dash-title">Galería</div>
+                    </div>
                     <div class="dash-card" onclick="irA('view-inventario', 'Inventario', 'btn-inventario')">
                         <span class="dash-icon">📋</span>
                         <div class="dash-title">Inventario</div>
@@ -170,20 +183,38 @@
             </div>
         </div>
 
+        <!-- NUEVA VISTA DE GALERIA -->
+        <div id="view-galeria" class="tab-content">
+            <div class="seccion">
+                <h3>📷 Galería de Productos</h3>
+                <input type="text" id="inp_buscar_gal" onkeyup="renderizarGaleria()" placeholder="Buscar en galería...">
+                <div class="gallery-grid" id="galeria-container">
+                    <!-- AQUI SE GENERAN LAS TARJETAS -->
+                </div>
+            </div>
+        </div>
+
         <div id="view-inventario" class="tab-content">
             <div class="seccion no-print">
-                <h3>+ Nuevo Producto</h3>
+                <h3>+ Nuevo Producto (Con 4 Fotos)</h3>
                 <input type="text" id="inp_codigo" placeholder="Código (ej. A01)">
                 <input type="text" id="inp_nombre" placeholder="Nombre Producto">
                 <input type="text" id="inp_ubicacion" placeholder="Ubicación">
                 <input type="number" id="inp_saldo" placeholder="Cantidad Inicial">
-                <label style="color:#aaa; font-size:0.9em;">Foto (Opcional):</label>
-                <input type="file" id="inp_foto" accept="image/*">
+                
+                <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; margin-top:10px;">
+                    <label style="color:#aaa; font-size:0.9em; display:block; margin-bottom:5px;">Subir 4 Fotos:</label>
+                    <input type="file" id="inp_foto1" accept="image/*" placeholder="Foto 1 (Principal)">
+                    <input type="file" id="inp_foto2" accept="image/*" placeholder="Foto 2">
+                    <input type="file" id="inp_foto3" accept="image/*" placeholder="Foto 3">
+                    <input type="file" id="inp_foto4" accept="image/*" placeholder="Foto 4">
+                </div>
+
                 <button onclick="agregarProducto()">GUARDAR EN NUBE</button>
             </div>
 
             <div class="seccion">
-                <h3>🔍 Buscar Producto</h3>
+                <h3>🔍 Inventario (Tabla)</h3>
                 <input type="text" id="inp_buscar" onkeyup="buscarProducto()" placeholder="Escribe nombre o código...">
                 <div class="tabla-container">
                     <table>
@@ -284,32 +315,26 @@
         alert("Error de conexión: Revisa la configuración de Firebase en el código.");
     }
 
-    // Variables Globales
     let productos = [];
     let movimientos = [];
     let usuarios = []; 
+    const PLACEHOLDER = "https://via.placeholder.com/150/1a0b2e/ffffff?text=Sin+Foto";
 
     window.addEventListener('DOMContentLoaded', () => {
         crearFondoAnimado();
         iniciarEfecto3D();
-        
-        // Escuchar datos en tiempo real de Firebase
         if(db) {
-            escucharUsuarios(); // Para login
-            escucharProductos(); // Inventario compartido
-            escucharMovimientos(); // Historial compartido
+            escucharUsuarios();
+            escucharProductos();
+            escucharMovimientos();
         }
     });
 
-    // --- FUNCIONES FIREBASE REAL-TIME ---
-
+    // --- FIREBASE LISTENERS ---
     function escucharUsuarios() {
         db.collection("usuarios").onSnapshot((querySnapshot) => {
             usuarios = [];
-            querySnapshot.forEach((doc) => {
-                usuarios.push(doc.data());
-            });
-            // Si no hay usuarios en la nube, crear admin por defecto localmente
+            querySnapshot.forEach((doc) => { usuarios.push(doc.data()); });
             if(usuarios.length === 0) usuarios.push({user:"admin", pass:"1234"});
         });
     }
@@ -319,7 +344,13 @@
             productos = [];
             querySnapshot.forEach((doc) => {
                 let data = doc.data();
-                data.id = doc.id; // Guardamos el ID de Firebase para poder borrar/editar
+                data.id = doc.id;
+                // Compatibilidad: si el producto viejo solo tiene 'foto' (singular), lo convertimos a array
+                if(!data.fotos && data.foto) {
+                    data.fotos = [data.foto, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
+                } else if (!data.fotos) {
+                    data.fotos = [PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
+                }
                 productos.push(data);
             });
             productos.sort((a,b)=> a.nombre.localeCompare(b.nombre));
@@ -330,15 +361,12 @@
     function escucharMovimientos() {
         db.collection("movimientos").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
             movimientos = [];
-            querySnapshot.forEach((doc) => {
-                movimientos.push(doc.data()); // No necesitamos ID aquí por ahora
-            });
+            querySnapshot.forEach((doc) => { movimientos.push(doc.data()); });
             actualizarTodo();
         });
     }
 
-    // --- LÓGICA DE USUARIOS ---
-
+    // --- USUARIOS ---
     function toggleRegistro() {
         const login = document.getElementById("form-login");
         const reg = document.getElementById("form-register");
@@ -347,36 +375,24 @@
         document.getElementById("error_msg").style.display = "none";
         document.getElementById("reg_msg").style.display = "none";
     }
-
     function registrarUsuario() {
         const u = document.getElementById("reg_user").value.trim();
         const p = document.getElementById("reg_pass").value.trim();
         if(!u || !p) return alert("Faltan datos");
-
         if(usuarios.some(x => x.user === u)) return alert("Usuario ya existe");
-
-        // Guardar en Firebase
-        db.collection("usuarios").add({ user: u, pass: p })
-        .then(() => {
-            const msg = document.getElementById("reg_msg");
-            msg.innerText = "¡Usuario Creado en la Nube!";
-            msg.style.display = "block";
+        db.collection("usuarios").add({ user: u, pass: p }).then(() => {
+            document.getElementById("reg_msg").style.display = "block";
             setTimeout(() => toggleRegistro(), 1500);
-        })
-        .catch(e => alert("Error: " + e.message));
+        }).catch(e => alert("Error: " + e.message));
     }
-
     function iniciarSesion() {
         const u = document.getElementById("log_user").value.trim();
         const p = document.getElementById("log_pass").value.trim();
         const loading = document.getElementById("loading_msg");
-        
         loading.style.display = "block";
-
-        // Pequeño delay para asegurar que cargaron los datos de Firebase
         setTimeout(() => {
             if(usuarios.some(x => x.user === u && x.pass === p)) {
-                alert(u.toUpperCase() + " BETICO Y ROBERT DEVELOPER TE DAN LA BIENVENIDA");
+                alert(u.toUpperCase() + " BIENVENIDO");
                 document.getElementById("login-view").style.display = "none";
                 document.getElementById("app-view").style.display = "block";
                 navegar('view-dashboard', 'Inicio', document.getElementById('btn-dashboard'));
@@ -386,14 +402,9 @@
             }
         }, 1000);
     }
+    function cerrarSesion() { location.reload(); }
 
-    function cerrarSesion() {
-        alert("PROGRAMADOR - ROBERT PARACO 2025");
-        location.reload(); 
-    }
-
-    // --- OPERACIONES DE DATOS (CRUD FIREBASE) ---
-
+    // --- LOGICA PRODUCTOS (CRUD) ---
     const getBase64 = (file) => new Promise((resolve,reject) => {
         const r = new FileReader(); r.readAsDataURL(file);
         r.onload = () => resolve(r.result); r.onerror = error => reject(error);
@@ -404,31 +415,44 @@
         const nom = document.getElementById("inp_nombre").value;
         const ubi = document.getElementById("inp_ubicacion").value;
         const sal = parseInt(document.getElementById("inp_saldo").value) || 0;
-        const file = document.getElementById("inp_foto");
+        
+        // Obtener inputs de las 4 fotos
+        const f1 = document.getElementById("inp_foto1").files[0];
+        const f2 = document.getElementById("inp_foto2").files[0];
+        const f3 = document.getElementById("inp_foto3").files[0];
+        const f4 = document.getElementById("inp_foto4").files[0];
 
         if(!cod || !nom) return alert("Código y Nombre requeridos");
 
-        let foto = "https://via.placeholder.com/50/4a148c/ffffff?text=IMG";
-        if(file.files.length > 0) {
-            try { foto = await getBase64(file.files[0]); } catch(e){}
-        }
+        // Procesar fotos a Base64
+        let fotosArr = [PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
+        
+        try {
+            if(f1) fotosArr[0] = await getBase64(f1);
+            if(f2) fotosArr[1] = await getBase64(f2);
+            if(f3) fotosArr[2] = await getBase64(f3);
+            if(f4) fotosArr[3] = await getBase64(f4);
+        } catch(e) { console.error(e); }
 
         const dataQR = `ID:${cod}|Pr:${nom}|Ub:${ubi}|St:${sal}`;
         const qr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dataQR)}`;
 
-        // Guardar en Firestore
         db.collection("productos").add({
-            codigo: cod, nombre: nom, ubicacion: ubi, saldo: sal, foto: foto, qr: qr
+            codigo: cod, nombre: nom, ubicacion: ubi, saldo: sal, 
+            foto: fotosArr[0], // Guardamos la principal suelta por compatibilidad
+            fotos: fotosArr,   // Guardamos el array completo
+            qr: qr
         }).then(() => {
-            alert("Producto Guardado en Nube");
+            alert("Producto Guardado con Fotos");
             document.getElementById("inp_codigo").value = "";
             document.getElementById("inp_nombre").value = "";
             document.getElementById("inp_ubicacion").value = "";
             document.getElementById("inp_saldo").value = "";
-            document.getElementById("inp_foto").value = "";
-        }).catch(error => {
-            alert("Error al guardar: " + error.message);
-        });
+            document.getElementById("inp_foto1").value = "";
+            document.getElementById("inp_foto2").value = "";
+            document.getElementById("inp_foto3").value = "";
+            document.getElementById("inp_foto4").value = "";
+        }).catch(error => alert("Error: " + error.message));
     }
 
     function agregarMovimiento() {
@@ -439,7 +463,6 @@
 
         if(!prodName || !cant) return alert("Faltan datos");
 
-        // Buscar producto actual en el array local (que viene de firebase)
         let p = productos.find(x => x.nombre === prodName);
         if(!p) return alert("Producto no encontrado");
 
@@ -450,23 +473,13 @@
             nuevoSaldo -= cant;
         }
 
-        // 1. Actualizar el saldo del producto en Firebase
         const dataQR = `ID:${p.codigo}|Pr:${p.nombre}|Ub:${p.ubicacion}|St:${nuevoSaldo}`;
         const nuevoQR = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(dataQR)}`;
 
-        db.collection("productos").doc(p.id).update({
-            saldo: nuevoSaldo,
-            qr: nuevoQR
-        });
-
-        // 2. Registrar el movimiento en Firebase
+        db.collection("productos").doc(p.id).update({ saldo: nuevoSaldo, qr: nuevoQR });
         db.collection("movimientos").add({
-            producto: prodName,
-            tipo: tipo,
-            cantidad: cant,
-            referencia: ref,
-            fecha: new Date().toLocaleString(),
-            timestamp: firebase.firestore.FieldValue.serverTimestamp() // Para ordenar
+            producto: prodName, tipo: tipo, cantidad: cant, referencia: ref,
+            fecha: new Date().toLocaleString(), timestamp: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             document.getElementById("inp_cantidad").value = "";
             document.getElementById("inp_referencia").value = "";
@@ -475,30 +488,29 @@
     }
 
     function borrarProducto(idFirebase) {
-        if(confirm("¿Borrar producto de la base de datos global?")) {
-            db.collection("productos").doc(idFirebase).delete()
-            .then(() => alert("Eliminado"))
-            .catch(e => alert("Error: " + e));
+        if(confirm("¿Eliminar producto?")) {
+            db.collection("productos").doc(idFirebase).delete();
         }
     }
 
-    // --- VISUALIZACIÓN (SE LLAMA AUTOMÁTICAMENTE AL RECIBIR DATOS) ---
-
+    // --- RENDERIZADO ---
     function actualizarTodo() {
         cargarSelects(); 
-        buscarProducto(); // Refresca tabla usando el input de búsqueda actual
+        buscarProducto();
+        renderizarGaleria();
         mostrarMovPorProducto();
     }
 
     function mostrar(lista) {
         const t = document.getElementById("tablaProductos");
         t.innerHTML = "";
-        if(lista.length === 0) { t.innerHTML = "<tr><td colspan='4'>Cargando o Vacío...</td></tr>"; return; }
+        if(lista.length === 0) { t.innerHTML = "<tr><td colspan='4'>Vacío...</td></tr>"; return; }
 
         lista.forEach(p => {
+            let imgPrincipal = (p.fotos && p.fotos.length > 0) ? p.fotos[0] : (p.foto || PLACEHOLDER);
             t.innerHTML += `
             <tr>
-                <td><img src="${p.foto}" class="prod-img"></td>
+                <td><img src="${imgPrincipal}" class="prod-img"></td>
                 <td>
                     <b style="color:white;">${p.nombre}</b><br>
                     <small style="color:#aaa;">ID:${p.codigo}</small><br>
@@ -506,7 +518,6 @@
                 </td>
                 <td style="font-weight:bold; color:#00e676; font-size:1.1em;">${p.saldo}</td>
                 <td>
-                    <!-- Usamos el ID de Firebase para borrar -->
                     <button onclick="borrarProducto('${p.id}')" style="padding:5px; width:auto; background:#d32f2f;">🗑</button>
                     <a href="${p.qr}" download target="_blank"><img src="${p.qr}" style="width:30px; margin-left:5px;"></a>
                 </td>
@@ -514,9 +525,48 @@
         });
     }
 
+    function renderizarGaleria() {
+        const container = document.getElementById("galeria-container");
+        const filtro = document.getElementById("inp_buscar_gal").value.toLowerCase();
+        container.innerHTML = "";
+
+        const listaFiltrada = productos.filter(p => p.nombre.toLowerCase().includes(filtro) || p.codigo.toLowerCase().includes(filtro));
+
+        if(listaFiltrada.length === 0) { container.innerHTML = "<p>No hay productos</p>"; return; }
+
+        listaFiltrada.forEach(p => {
+            // Asegurar que tenemos array de fotos
+            let imgs = p.fotos || [p.foto || PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
+            
+            // Crear ID unico para cambiar imagen principal al hacer click
+            let cardId = "card-" + p.id;
+
+            container.innerHTML += `
+            <div class="gallery-card">
+                <img src="${imgs[0]}" class="gallery-main-img" id="img-${cardId}">
+                <div class="gallery-thumbs">
+                    <img src="${imgs[0]}" class="gallery-thumb" onclick="cambiarFoto('${cardId}', '${imgs[0]}')">
+                    <img src="${imgs[1]}" class="gallery-thumb" onclick="cambiarFoto('${cardId}', '${imgs[1]}')">
+                    <img src="${imgs[2]}" class="gallery-thumb" onclick="cambiarFoto('${cardId}', '${imgs[2]}')">
+                    <img src="${imgs[3]}" class="gallery-thumb" onclick="cambiarFoto('${cardId}', '${imgs[3]}')">
+                </div>
+                <div class="gallery-info">
+                    <h4>${p.nombre}</h4>
+                    <p><span class="gallery-label">COD:</span> ${p.codigo}</p>
+                    <p><span class="gallery-label">UBI:</span> ${p.ubicacion}</p>
+                    <p><span class="gallery-label">STOCK:</span> <span style="color:#00e676">${p.saldo}</span></p>
+                </div>
+            </div>`;
+        });
+    }
+
+    // Funcion helper para cambiar foto en la galeria
+    window.cambiarFoto = function(cardId, url) {
+        document.getElementById("img-" + cardId).src = url;
+    }
+
     function buscarProducto() {
         const val = document.getElementById("inp_buscar").value.toLowerCase();
-        // Filtramos sobre el array 'productos' que se mantiene actualizado por Firebase
         const f = productos.filter(p => p.nombre.toLowerCase().includes(val) || p.codigo.toLowerCase().includes(val));
         mostrar(f);
     }
@@ -525,24 +575,18 @@
         const filter = document.getElementById("sel_movProd").value;
         const t = document.getElementById("tablaMovProd");
         t.innerHTML = "";
-
-        // Movimientos ya vienen ordenados de Firebase si usamos orderBy, pero filtrado local es rapido
-        let data = movimientos; // Ya es el array global
+        let data = movimientos;
         if(filter && filter !== "TODOS") data = data.filter(m => m.producto === filter);
-
-        if(data.length === 0) { t.innerHTML = "<tr><td colspan='5'>Sin movimientos</td></tr>"; return; }
 
         data.forEach((m) => {
             let col = m.tipo === "ENTRADA" ? "#00e676" : "#ff1744";
-            // Fecha: si viene de timestamp firebase, convertir, sino usar string guardado
-            let fechaStr = m.fecha; 
             t.innerHTML += `
             <tr>
                 <td class="no-print"><input type="checkbox" class="chk-print"></td>
                 <td>${m.producto}<br><small style="color:#aaa">${m.referencia}</small></td>
                 <td style="color:${col}; font-weight:bold;">${m.tipo.substring(0,3)}</td>
                 <td style="font-weight:bold;">${m.cantidad}</td>
-                <td style="font-size:0.75em; color:#bbb;">${fechaStr.split(',')[0]}</td>
+                <td style="font-size:0.75em; color:#bbb;">${m.fecha.split(',')[0]}</td>
             </tr>`;
         });
     }
@@ -551,16 +595,13 @@
         const s1 = document.getElementById("sel_movProd");
         const s2 = document.getElementById("sel_movProd_input");
         const v1 = s1.value, v2 = s2.value;
-
         let ops = productos.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('');
         s1.innerHTML = `<option value="TODOS">Todo</option>` + ops;
         s2.innerHTML = ops;
-        
         if(v1) s1.value = v1;
         if(v2) s2.value = v2;
     }
 
-    // --- EFECTOS VISUALES Y NAVEGACIÓN (IGUAL QUE ANTES) ---
     function crearFondoAnimado() {
         const bg = document.getElementById("bg-container");
         const chars = ['0', '1', '10', '01', '∑', 'π', '∫', '∆', 'Ω', 'β', 'λ', '{ }', '</>', '0xFF'];
@@ -582,18 +623,11 @@
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left; 
                 const y = e.clientY - rect.top;  
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -20; 
-                const rotateY = ((x - centerX) / centerX) * 20;
+                const rotateX = ((y - (rect.height/2)) / (rect.height/2)) * -20; 
+                const rotateY = ((x - (rect.width/2)) / (rect.width/2)) * 20;
                 card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-            });
-            card.addEventListener('mousedown', () => {
-                 card.style.transform = `perspective(1000px) scale(0.95)`;
-            });
+            card.addEventListener('mouseleave', () => card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`);
         });
     }
     function toggleMenu() { document.getElementById('navMenu').classList.toggle('show'); }
@@ -616,8 +650,6 @@
             }, 500); 
         } else { vistaNueva.classList.add('display-block', 'visible'); }
     }
-
-    // --- REPORTES ---
     function getSelected() {
         const chks = document.querySelectorAll('.chk-print:checked');
         let rows = chks.length ? Array.from(chks).map(c=>c.closest('tr')) : Array.from(document.querySelectorAll('#tablaMovProd tr'));
@@ -639,11 +671,7 @@
         window.location.href = `mailto:?subject=Reporte ALP13&body=${body}`;
     }
     function imprimirSeleccion() {
-        const chks = document.querySelectorAll('.chk-print');
-        const hasCheck = Array.from(chks).some(c => c.checked);
-        if(hasCheck) chks.forEach(c => { if(!c.checked) c.closest('tr').classList.add('no-print'); });
         window.print();
-        if(hasCheck) chks.forEach(c => c.closest('tr').classList.remove('no-print'));
     }
 </script>
 </body>
